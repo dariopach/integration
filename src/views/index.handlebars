@@ -1,0 +1,11 @@
+<div class="box">
+    <h1>Productos en stock</h1>
+    {{#each products}}
+        <div>
+            <p>{{this.title}}</p>
+            <p>{{this.description}}</p>
+            <p>$ {{this.price}}</p>
+            <p>Stock: {{this.stock}}</p>
+        </div>
+    {{/each}}
+</div>

@@ -1,0 +1,22 @@
+[
+	{
+		"title": "Azucar",
+		"description": "Endulzante",
+		"code": "1234",
+		"price": 100,
+		"status": true,
+		"stock": 50,
+		"category": "Comestibles",
+		"thumbnails": []
+	},
+	{
+		"title": "Zanahoria",
+		"description": "Verdura",
+		"code": "1238",
+		"price": 100,
+		"status": true,
+		"stock": 50,
+		"category": "Comestibles",
+		"thumbnails": []
+	}
+]
