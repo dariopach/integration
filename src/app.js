@@ -5,7 +5,7 @@ import viewsRouter from './routes/viewsRouter.js';
 import __dirname from './utils/constantsUtil.js';
 import mongoose from "mongoose";
 
-const uri = 'mongodb://127.0.0.1:27017/integration';
+const uri = 'mongodb://127.0.0.1:27017/ecommerce';
 mongoose.connect(uri);
 
 const app = express();
