@@ -41,12 +41,9 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
       return;
     }
 
-    const productIndex = cart.products.findIndex(
-        (p) => p.product.toString() === productId
-      );
-  
-      if (productIndex !== -1) {
-        cart.products[productIndex].quantity += quantity;
+    const product = cart.products.find(product => product.product === productId);
+      if (product) {
+        product.quantity += quantity;
       } else {
         cart.products.push({ product: productId, quantity });
       }
