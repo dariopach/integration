@@ -13,4 +13,4 @@ const messageSchema = new mongoose.Schema({
     }
 });
 
-export const productModel = mongoose.model(messageCollection, messageSchema);
+export const messageModel = mongoose.model(messageCollection, messageSchema);

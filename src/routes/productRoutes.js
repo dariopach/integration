@@ -13,7 +13,7 @@ router.get('/', async (req,res) => {
 router.post('/', uploader.array('thumbnails', 2), async (req, res) => {
     
     if (!req.files) {
-        req.body,thumbnails = [];
+        req.body.thumbnails = [];
         req.files?.forEach((file) => {
             req.body.thumbnails.push(file.filename);
         });
