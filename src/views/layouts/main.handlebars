@@ -8,58 +8,6 @@
 </head>
 <body>
     {{{body}}}
-
-    <!-- Área del chat -->
-    <div id="chat-container">
-        <h2>Chat en línea</h2>
-        <div id="chat-messages">
-            <!-- Aquí se mostrarán los mensajes del chat -->
-        </div>
-        <form id="chat-form">
-            <input type="text" id="user-input" placeholder="Nombre de usuario" required>
-            <input type="text" id="message-input" placeholder="Escribe tu mensaje" required>
-            <button type="submit">Enviar</button>
-        </form>
-    </div>
-
-    <!-- Scripts necesarios para el chat (Socket.IO y lógica del chat) -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        // JavaScript para manejar la lógica del chat
-        const socket = io(); // Conectar con el servidor WebSocket
-
-        // Manejar el envío del formulario
-        document.getElementById('chat-form').addEventListener('submit', (event) => {
-            event.preventDefault();
-            const user = document.getElementById('user-input').value;
-            const message = document.getElementById('message-input').value;
-
-            if (user && message) {
-                // Enviar el mensaje al servidor a través de WebSocket
-                socket.emit('chatMessage', { user, message });
-
-                // Limpiar el campo de entrada del mensaje
-                document.getElementById('message-input').value = '';
-            }
-        });
-
-        // Manejar la recepción de mensajes desde el servidor
-        socket.on('message', (data) => {
-            const { user, message } = data;
-            addMessage(user, message);
-        });
-
-        // Función para agregar un mensaje al chat
-        function addMessage(user, message) {
-            const messageContainer = document.getElementById('chat-messages');
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            messageElement.innerHTML = `<strong>${user}:</strong> ${message}`;
-            messageContainer.appendChild(messageElement);
-
-            // Desplazarse hacia abajo para mostrar el mensaje más reciente
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        }
-    </script>
+  
 </body>
 </html>
