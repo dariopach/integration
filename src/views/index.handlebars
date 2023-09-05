@@ -1,65 +1,17 @@
-<div class="box">
-    <h1>Productos en stock</h1>
-    {{#each products}}
-        <div>
-            <p>{{this.title}}</p>
-            <p>{{this.description}}</p>
-            <p>$ {{this.price}}</p>
-            <p>Stock: {{this.stock}}</p>
-        </div>
-    {{/each}}
 
-    <title>Chat</title>
-    <style>
-        /* Estilos CSS para el chat */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        #chat-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        #chat-messages {
-            height: 300px;
-            overflow-y: scroll;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-
-        .message {
-            margin-bottom: 10px;
-        }
-
-        #chat-form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        #user-input,
-        #message-input {
-            margin-bottom: 10px;
-            padding: 5px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
 <body>
+    <div class="box">
+        <h1>Productos en stock</h1>
+        {{#each products}}
+            <div>
+                <p>{{this.title}}</p>
+                <p>{{this.description}}</p>
+                <p>$ {{this.price}}</p>
+                <p>Stock: {{this.stock}}</p>
+            </div>
+        {{/each}}
+    </div>
+
     <div id="chat-container">
         <div id="chat-messages">
             {{#each messages}}
@@ -75,9 +27,8 @@
         </form>
     </div>
 
-    <script type="module">
-        import io from '/socket.io/socket.io.js'; 
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
         const socket = io(); // Conecta con el servidor WebSocket
 
         // Manejar el envío del formulario

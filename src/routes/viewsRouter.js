@@ -8,7 +8,7 @@ router.get('/', (req,res) => {
     res.render(
         'index',
         {
-            title: 'Prueba',
+            title: 'Entrega',
             style: 'index.css',
             products: ProductService.getAllProducts()
         }
