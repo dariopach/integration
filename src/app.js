@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
 });
 
 const PORT = 8080;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Start server in PORT ${PORT}`);
 });
 
