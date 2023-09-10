@@ -2,9 +2,19 @@ import { productModel } from "../models/productModel.js";
 
 class productDBService{
 
-    async getAllProducts() {
+    async getAllProducts({ page, limit, sort, query }) {
         try {
-            const products = await productModel.find().lean();
+            const options = {
+                page: page || 1,
+                limit: limit || 10,
+                sort: sort || {},
+                customLabels: {
+                    totalDocs: 'totalProducts',
+                    docs: 'products',
+                },
+            };
+
+            const products = await productModel.paginate(query || {}, options);
             return products;
         } catch (error) {
             console.log(error.message);

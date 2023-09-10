@@ -15,15 +15,14 @@ router.get('/', async (req,res) => {
     )
 });
 
-router.get('/products', async (req, res) => {
-    res.render(
-        'productList',
-        {
-            title: 'Lista de Productos',
-            style: 'productList.css',
-            products: await ProductService.getAllProducts()
-        }
-    );
+router.get('/', async (req, res) => {
+    const { page, limit, sort, query } = req.query;
+    const products = await ProductService.getAllProducts({ page, limit, sort, query });
+    res.render('productList', {
+        title: 'Lista de Productos',
+        style: 'productList.css',
+        products,
+    });
 });
 
 
