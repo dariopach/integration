@@ -27,6 +27,7 @@ app.set("view engine", "handlebars");
 app.use(express.json());
 app.use(express.urlencoded({ extend: true }));
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
 
 //Routers
 app.use("/api/product", productRoutes);

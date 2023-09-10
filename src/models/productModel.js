@@ -31,6 +31,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    availability: {
+        type: Boolean,
+        required: true
+    },
     thumbnails: {
         type: Array
     }

@@ -2,14 +2,7 @@
 <body>
     <div class="box">
         <h1>Productos en stock</h1>
-        {{#each products}}
-            <div>
-                <p>{{title}}</p>
-                <p>{{description}}</p>
-                <p>$ {{price}}</p>
-                <p>Stock: {{stock}}</p>
-            </div>
-        {{/each}}
+        {{> productList}}
     </div>
 
     <div id="chat-container">

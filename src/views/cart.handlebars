@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+    <h1>Carrito de Compras</h1>
+    <div id="cart">
+        {{#if products.length}}
+            {{#each products}}
+                <div class="cart-item">
+                    <h2>{{this.product.title}}</h2>
+                    <p>Precio: ${{this.product.price}}</p>
+                    <p>Cantidad: {{this.quantity}}</p>
+                    <button onclick="updateQuantity('{{this.product._id}}', 'increase')">Aumentar Cantidad</button>
+                    <button onclick="updateQuantity('{{this.product._id}}', 'decrease')">Reducir Cantidad</button>
+                    <button onclick="removeFromCart('{{this.product._id}}')">Eliminar del Carrito</button>
+                </div>
+            {{/each}}
+            <p>Total: ${{total}}</p>
+        {{else}}
+            <p>El carrito está vacío.</p>
+        {{/if}}
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io(); // Conecta con el servidor WebSocket
+
+        socket.on('cartUpdated', (updatedCart) => {
+            // Genera el HTML actualizado del carrito en base a los datos recibidos
+            const updatedCartHtml = generateCartHtml(updatedCart);
+
+            // Actualiza la vista del carrito con el HTML generado
+            document.getElementById('cart').innerHTML = updatedCartHtml;
+        });
+
+        function generateCartHtml(cart) {
+            if (cart.products.length === 0) {
+                return '<p>El carrito está vacío.</p>';
+            }
+
+            let cartHtml = '<h1>Carrito de Compras</h1><div class="cart">';
+            cart.products.forEach((item) => {
+                cartHtml += '<div class="cart-item">';
+                cartHtml += `<h2>${item.product.title}</h2>`;
+                cartHtml += `<p>Precio: $${item.product.price}</p>`;
+                cartHtml += `<p>Cantidad: ${item.quantity}</p>`;
+                cartHtml += '<button onclick="updateQuantity(\'' + item.product._id + '\', \'increase\')">Aumentar Cantidad</button>';
+                cartHtml += '<button onclick="updateQuantity(\'' + item.product._id + '\', \'decrease\')">Reducir Cantidad</button>';
+                cartHtml += '<button onclick="removeFromCart(\'' + item.product._id + '\')">Eliminar del Carrito</button>';
+                cartHtml += '</div>';
+            });
+            cartHtml += `<p>Total: $${cart.total}</p></div>`;
+            
+            return cartHtml;
+        }
+
+        function updateQuantity(productId, action) {
+            fetch(`/api/carts/cartId/products/${productId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ quantity: action === 'increase' ? 1 : -1 }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                } else {
+                    alert('Error al actualizar la cantidad en el carrito');
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar la cantidad en el carrito:', error);
+            });
+        }
+
+        function removeFromCart(productId) {
+            fetch(`/api/carts/cartId/products/${productId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                } else {
+                    alert('Error al eliminar producto del carrito');
+                }
+            })
+            .catch(error => {
+                console.error('Error al eliminar producto del carrito:', error);
+            });
+        }
+    </script>
+</body>
+</html>

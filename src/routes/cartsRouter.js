@@ -55,4 +55,57 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
   }
 });
 
+// Endpoint delete from cart
+cartsRouter.delete('/:cid/products/:pid', async (req, res) => {
+  const cartId = req.params.cid;
+  const productId = req.params.pid;
+
+  try {
+      const result = await cartService.removeProductFromCart(cartId, productId);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Endpoint refresh
+cartsRouter.put('/:cid', async (req, res) => {
+  const cartId = req.params.cid;
+  const products = req.body.products;
+
+  try {
+      const result = await cartService.updateCart(cartId, products);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Endpoint refresh quantity
+cartsRouter.put('/:cid/products/:pid', async (req, res) => {
+  const cartId = req.params.cid;
+  const productId = req.params.pid;
+  const quantity = req.body.quantity;
+
+  try {
+      const result = await cartService.updateProductQuantity(cartId, productId, quantity);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Endpoint delete all
+cartsRouter.delete('/:cid', async (req, res) => {
+  const cartId = req.params.cid;
+
+  try {
+      const result = await cartService.clearCart(cartId);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 export default cartsRouter;

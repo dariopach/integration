@@ -39,6 +39,44 @@ class productDBService{
         }
 
     }
+
+    async getFilteredProducts({ limit, page, sort, query, category, availability }) {
+        try {
+            const filter = {};
+            if (query) {
+                filter.title = { $regex: query, $options: 'i' };
+            }
+            if (category) {
+                filter.category = category;
+            }
+            if (availability !== undefined) {
+                filter.availability = availability === 'true';
+            }
+
+            const options = {
+                page,
+                limit,
+                sort,
+            };
+
+            const products = await productModel.paginate(filter, options);
+            return {
+                status: 'success',
+                payload: products.docs,
+                totalPages: products.totalPages,
+                prevPage: products.prevPage,
+                nextPage: products.nextPage,
+                page: products.page,
+                hasPrevPage: products.hasPrevPage,
+                hasNextPage: products.hasNextPage,
+                prevLink: products.hasPrevPage ? `/api/product?limit=${limit}&page=${products.prevPage}` : null,
+                nextLink: products.hasNextPage ? `/api/product?limit=${limit}&page=${products.nextPage}` : null,
+            };
+        } catch (error) {
+            console.log(error.message);
+            return { status: 'error', payload: [] };
+        }
+    }    
 }
 
 export { productDBService } ;
