@@ -14,7 +14,7 @@ class productDBService{
                 },
             };
 
-            const products = await productModel.paginate(query || {}, options);
+            const products = await productModel.paginate(query || {}, {lean: true, ...options});
             return products;
         } catch (error) {
             console.log(error.message);
