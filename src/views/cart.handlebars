@@ -9,7 +9,7 @@
 <body>
     <h1>Carrito de Compras</h1>
     <div id="cart">
-        {{#if products.length}}
+        {{#if cart.products.length}}
             {{#each products}}
                 <div class="cart-item">
                     <h2>{{this.product.title}}</h2>
@@ -20,7 +20,7 @@
                     <button onclick="removeFromCart('{{this.product._id}}')">Eliminar del Carrito</button>
                 </div>
             {{/each}}
-            <p>Total: ${{total}}</p>
+            <p>Total: ${{cart.total}}</p>
         {{else}}
             <p>El carrito está vacío.</p>
         {{/if}}
