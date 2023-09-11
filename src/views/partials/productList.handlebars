@@ -7,17 +7,31 @@
     <link rel="stylesheet" href="../../../public/css/productList.css">
 </head>
 <body>
-    <div class="productList">
-        {{#each products}}
-            <div class="product">
-                <h2>{{title}}</h2>
-                <p>{{description}}</p>
-                <p>Precio: ${{price}}</p>
-                <p>Stock: {{stock}}</p>
-                <button onclick="addToCart('{{_id}}')">Agregar al Carrito</button>
-            </div>
-        {{/each}}
-    </div>
+    {{#if result.isValid}}
+        <div class="productList">
+            {{#each result.products}}
+                <div class="product">
+                    <h2>{{title}}</h2>
+                    <p>{{description}}</p>
+                    <p>Precio: ${{price}}</p>
+                    <p>Stock: {{stock}}</p>
+                    <button onclick="addToCart('{{_id}}')">Agregar al Carrito</button>
+                </div>
+            {{/each}}
+        </div>
+
+        {{#if result.hasPrevPage}}
+            <a href={{result.prevLink}}><< Anterior</a>
+        {{/if}}
+        &nbsp;
+        {{result.page}}
+        &nbsp;
+        {{#if result.hasNextPage}}
+            <a href={{result.prevLink}}>Siguiente >></a>
+        {{/if}}
+    {{else}}
+        <h1>No hay productos para mostrar</h1>
+    {{/if}}
 
     <script>
     function addToCart(productId) {
