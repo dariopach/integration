@@ -43,7 +43,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
       return;
     }
 
-    const product = cart.products.find(product => product.product === productId);
+    const product = cart.products.find(product => product.product._id.toString() === productId);
       if (product) {
         product.quantity += quantity;
       } else {
@@ -51,7 +51,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
       }
 
     await cart.save();
-    res.json(cart);
+    res.json({ message: cart, status: 'success' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

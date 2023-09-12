@@ -51,6 +51,10 @@ io.on('connection', (socket) => {
       io.emit('message', { user, message });
   });
 
+  socket.on('cartUpdated', async (data) => {
+    io.emit('cartUpdated', data);
+  });
+
   // Maneja la desconexión de un cliente
   socket.on('disconnect', () => {
       console.log('Un cliente se ha desconectado');

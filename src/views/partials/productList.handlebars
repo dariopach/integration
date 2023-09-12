@@ -66,15 +66,16 @@
     function addToCart(productId) {
         const randCart = {{{randomCart}}};
 
-        fetch(`/api/carts/${randCart._id}/products/${productId}`, {
-            method: 'PUT',
+        fetch(`/api/carts/${randCart._id}/product/${productId}`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ quantity: 1 }), 
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.status = 'success') {
                 alert('Producto agregado al carrito.');
             } else {
                 alert('Error al agregar el producto al carrito.');

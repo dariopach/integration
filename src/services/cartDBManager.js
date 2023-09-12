@@ -1,4 +1,5 @@
 import { cartModel } from "../models/cartModel.js";
+import { productDBService } from "./productDBManager.js";
 
 class CartDBManager {
     async createCart() {
@@ -30,7 +31,7 @@ class CartDBManager {
     async removeProductFromCart(cartId, productId) {
         try {
             const cart = await cartModel.findById(cartId).populate('products.product').lean();
-            const products = cart.products.filter(product => product._id.toString() !== productId);
+            const products = cart.products.filter(product => product.product._id.toString() !== productId);
             const updatedCart = await this.updateCart(cartId, products);
             let total = 0;
             updatedCart.products.forEach( product => total += (product.product.price * product.quantity))
@@ -39,6 +40,29 @@ class CartDBManager {
         } catch (error) {
             console.error(error.message);
             throw new Error('Error removing product');
+        }
+    }
+
+    async updateProductQuantity(cartId, productId, quantity) {
+        try {
+            const cart = await cartModel.findById(cartId).populate('products.product').lean();
+            let products = []
+            cart.products.forEach(product => {
+                if (product.product._id.toString() === productId) {
+                    product.quantity += quantity;
+                    products.push(product);
+                } else {
+                    products.push(product);
+                }
+            });
+            const updatedCart = await this.updateCart(cartId, products);
+            let total = 0;
+            updatedCart.products.forEach( product => total += (product.product.price * product.quantity))
+            updatedCart.total = total;
+            return updatedCart;
+        } catch (error) {
+            console.error(error.message);
+            throw new Error('Error updating quantity');
         }
     }
 

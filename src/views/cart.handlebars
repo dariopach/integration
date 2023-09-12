@@ -15,9 +15,9 @@
                     <h2>{{product.title}}</h2>
                     <p>Precio: ${{product.price}}</p>
                     <p>Cantidad: {{quantity}}</p>
-                    <button onclick="updateQuantity('{{../cart._id}}', '{{_id}}', 'increase')">Aumentar Cantidad</button>
-                    <button onclick="updateQuantity('{{../cart._id}}', '{{_id}}', 'decrease')">Reducir Cantidad</button>
-                    <button onclick="removeFromCart('{{../cart._id}}', '{{_id}}')">Eliminar del Carrito</button>
+                    <button onclick="updateQuantity('{{../cart._id}}', '{{product._id}}', 'increase')">Aumentar Cantidad</button>
+                    <button onclick="updateQuantity('{{../cart._id}}', '{{product._id}}', 'decrease')">Reducir Cantidad</button>
+                    <button onclick="removeFromCart('{{../cart._id}}', '{{product._id}}')">Eliminar del Carrito</button>
                 </div>
             {{/each}}
             <p>Total: ${{cart.total}}</p>
@@ -43,7 +43,7 @@
                 return '<p>El carrito está vacío.</p>';
             }
 
-            let cartHtml = '<h1>Carrito de Compras</h1><div class="cart">';
+            let cartHtml = '';
             cart.products.forEach((item) => {
                 cartHtml += '<div class="cart-item">';
                 cartHtml += `<h2>${item.product.title}</h2>`;
@@ -60,8 +60,7 @@
         }
 
         function updateQuantity(cartId, productId, action) {
-            console.log(cartId, productId, action)
-            fetch(`/api/carts/${cartId}/product/${productId}`, {
+            fetch(`/api/carts/${cartId}/products/${productId}`, {
                 method: 'PUT',
                 body: JSON.stringify({ quantity: action === 'increase' ? 1 : -1 }),
                 headers: {
@@ -71,6 +70,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
+                    socket.emit('cartUpdated', data.message)
                 } else {
                     alert('Error al actualizar la cantidad en el carrito');
                 }
@@ -86,8 +86,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 if (data.status === 'success') {
+                    socket.emit('cartUpdated', data.message)
                 } else {
                     alert('Error al eliminar producto del carrito');
                 }
