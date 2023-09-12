@@ -9,7 +9,7 @@
 <body>
     <div class="filter-dropdown">
         <label for="category-filter">Filtrar por categoría:</label>
-        <select id="category-filter" onchange="filterByCategory(this.value)">
+        <select id="category-filter" onchange="filterByCategory(this.value, event)">
             <option value="">Todas</option>
             <option value="Comestibles">Comestibles</option>
             <option value="Raciones">Raciones</option>
@@ -18,7 +18,7 @@
 
     <div class="availability-filters">
         <label for="available-filter">Disponibilidad:</label>
-        <select id="available-filter" onchange="filterByStatus(this.value)">
+        <select id="available-filter" onchange="filterByStatus(this.value, event)">
             <option value="">Todas</option>
             <option value="true">Disponibles</option>
             <option value="false">No Disponibles</option>
@@ -53,12 +53,14 @@
 
     <script>
     // Función para filtrar productos por categoría
-    function filterByCategory(category) {
+    function filterByCategory(category, event) {
+        event.preventDefault(); 
         window.location.href = `/products?category=${category}`;
     }
 
     // Función para filtrar productos por disponibilidad
-    function filterByStatus(status) {
+    function filterByStatus(status, event) {
+        event.preventDefault();
         window.location.href = `/products?status=${status}`;
     }
 
