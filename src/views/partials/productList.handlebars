@@ -64,7 +64,9 @@
 
     // Función para agregar al carrito
     function addToCart(productId) {
-        fetch(`/api/carts/${cartId}/products/${productId}`, {
+        const randCart = {{{randomCart}}};
+
+        fetch(`/api/carts/${randCart._id}/products/${productId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

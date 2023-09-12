@@ -10,14 +10,14 @@
     <h1>Carrito de Compras</h1>
     <div id="cart">
         {{#if cart.products.length}}
-            {{#each products}}
+            {{#each cart.products}}
                 <div class="cart-item">
-                    <h2>{{this.product.title}}</h2>
-                    <p>Precio: ${{this.product.price}}</p>
-                    <p>Cantidad: {{this.quantity}}</p>
-                    <button onclick="updateQuantity('{{this.product._id}}', 'increase')">Aumentar Cantidad</button>
-                    <button onclick="updateQuantity('{{this.product._id}}', 'decrease')">Reducir Cantidad</button>
-                    <button onclick="removeFromCart('{{this.product._id}}')">Eliminar del Carrito</button>
+                    <h2>{{product.title}}</h2>
+                    <p>Precio: ${{product.price}}</p>
+                    <p>Cantidad: {{quantity}}</p>
+                    <button onclick="updateQuantity('{{../cart._id}}', '{{_id}}', 'increase')">Aumentar Cantidad</button>
+                    <button onclick="updateQuantity('{{../cart._id}}', '{{_id}}', 'decrease')">Reducir Cantidad</button>
+                    <button onclick="removeFromCart('{{../cart._id}}', '{{_id}}')">Eliminar del Carrito</button>
                 </div>
             {{/each}}
             <p>Total: ${{cart.total}}</p>
@@ -49,9 +49,9 @@
                 cartHtml += `<h2>${item.product.title}</h2>`;
                 cartHtml += `<p>Precio: $${item.product.price}</p>`;
                 cartHtml += `<p>Cantidad: ${item.quantity}</p>`;
-                cartHtml += '<button onclick="updateQuantity(\'' + item.product._id + '\', \'increase\')">Aumentar Cantidad</button>';
-                cartHtml += '<button onclick="updateQuantity(\'' + item.product._id + '\', \'decrease\')">Reducir Cantidad</button>';
-                cartHtml += '<button onclick="removeFromCart(\'' + item.product._id + '\')">Eliminar del Carrito</button>';
+                cartHtml += '<button onclick="updateQuantity(\'' + cart._id + '\', \'' + item.product._id + '\', \'increase\')">Aumentar Cantidad</button>';
+                cartHtml += '<button onclick="updateQuantity(\'' + cart._id + '\', \'' + item.product._id + '\', \'decrease\')">Reducir Cantidad</button>';
+                cartHtml += '<button onclick="removeFromCart(\'' + cart._id + '\', \'' + item.product._id + '\')">Eliminar del Carrito</button>';
                 cartHtml += '</div>';
             });
             cartHtml += `<p>Total: $${cart.total}</p></div>`;
@@ -59,8 +59,9 @@
             return cartHtml;
         }
 
-        function updateQuantity(productId, action) {
-            fetch(`/api/carts/cartId/products/${productId}`, {
+        function updateQuantity(cartId, productId, action) {
+            console.log(cartId, productId, action)
+            fetch(`/api/carts/${cartId}/product/${productId}`, {
                 method: 'PUT',
                 body: JSON.stringify({ quantity: action === 'increase' ? 1 : -1 }),
                 headers: {
@@ -79,12 +80,13 @@
             });
         }
 
-        function removeFromCart(productId) {
-            fetch(`/api/carts/cartId/products/${productId}`, {
+        function removeFromCart(cartId, productId) {
+            fetch(`/api/carts/${cartId}/products/${productId}`, {
                 method: 'DELETE',
             })
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 if (data.status === 'success') {
                 } else {
                     alert('Error al eliminar producto del carrito');

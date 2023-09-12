@@ -11,9 +11,43 @@ class CartDBManager {
         }
     }
 
+    async getRandomCart() {
+        try {
+            const cart = await cartModel.findOne().populate('products.product').lean();
+            if (cart) {
+                let total = 0;
+                cart.products.forEach( product => total += (product.product.price * product.quantity))
+                cart.total = total;
+                return cart;
+            }
+            return this.createCart();
+        } catch (error) {
+            console.error(error.message);
+            throw new Error('Error fetching cart');
+        }
+    }
+
+    async removeProductFromCart(cartId, productId) {
+        try {
+            const cart = await cartModel.findById(cartId).populate('products.product').lean();
+            const products = cart.products.filter(product => product._id.toString() !== productId);
+            const updatedCart = await this.updateCart(cartId, products);
+            let total = 0;
+            updatedCart.products.forEach( product => total += (product.product.price * product.quantity))
+            updatedCart.total = total;
+            return updatedCart;
+        } catch (error) {
+            console.error(error.message);
+            throw new Error('Error removing product');
+        }
+    }
+
     async getCartById(cartId) {
         try {
-            const cart = await cartModel.findById(cartId).populate('products.product');
+            const cart = await cartModel.findById(cartId).populate('products.product').lean();
+            let total = 0;
+            cart.products.forEach( product => total += (product.product.price * product.quantity))
+            cart.total = total;
             return cart;
         } catch (error) {
             console.error(error.message);
@@ -23,7 +57,7 @@ class CartDBManager {
 
     async updateCart(cartId, products) {
         try {
-            const updatedCart = await cartModel.findByIdAndUpdate(cartId, { products }, { new: true }).populate('products.product');
+            const updatedCart = await cartModel.findByIdAndUpdate(cartId, { products }, { new: true }).populate('products.product').lean();
             return updatedCart;
         } catch (error) {
             console.error(error.message);

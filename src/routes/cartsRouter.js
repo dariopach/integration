@@ -1,7 +1,9 @@
 import express from 'express';
 import { cartModel } from '../models/cartModel.js';
+import { CartDBManager } from '../services/cartDBManager.js';
 
 const cartsRouter = express.Router();
+const cartService = new CartDBManager();
 
 // Create a new cart
 cartsRouter.post('/', async (req, res) => {
@@ -59,10 +61,9 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 cartsRouter.delete('/:cid/products/:pid', async (req, res) => {
   const cartId = req.params.cid;
   const productId = req.params.pid;
-
   try {
       const result = await cartService.removeProductFromCart(cartId, productId);
-      res.json({ message: result });
+      res.json({ message: result, status: 'success' });
   } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
   }
@@ -89,7 +90,7 @@ cartsRouter.put('/:cid/products/:pid', async (req, res) => {
 
   try {
       const result = await cartService.updateProductQuantity(cartId, productId, quantity);
-      res.json({ message: result });
+      res.json({ message: result, status: 'success' });
   } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
   }

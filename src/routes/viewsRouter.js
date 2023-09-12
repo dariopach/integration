@@ -10,6 +10,7 @@ const CartService = new CartDBManager(); // Crea una instancia del servicio de c
 router.get('/', async (req, res) => {
     const { page, limit, sort, query } = req.query;
     const result = await ProductService.getAllProducts({ page, limit, sort, query });
+    const randomCart = JSON.stringify(await CartService.getRandomCart());
 
     result.prevLink = result.hasPrevPage ? `http://localhost:8080/products?page=${result.prevPage}` : '';
     result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}` : '';
@@ -19,6 +20,7 @@ router.get('/', async (req, res) => {
         title: 'Entrega',
         style: 'index.css',
         result,
+        randomCart
     });
 });
 
