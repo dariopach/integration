@@ -1,5 +1,18 @@
 
 <body>
+
+    <h1>Bienvenido {{user.first_name}} {{user.last_name}}</h1>
+    <hr>
+
+    <h2>Datos Básicos</h2>
+    <div class="userData">
+        <p><b>Nombre:</b> {{user.first_name}}</p>
+        <p><b>Apellido:</b> {{user.last_name}}</p>
+        <p><b>Email:</b> {{user.email}}</p>
+        <p><b>Edad:</b> {{user.age}}</p>
+    </div>
+
+
     <div class="box">
         <h1>Productos en stock</h1>
         {{> productList}}

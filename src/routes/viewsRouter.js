@@ -7,7 +7,7 @@ const router = Router();
 const ProductService = new productDBService();
 const CartService = new CartDBManager(); // Crea una instancia del servicio de carrito
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     const { page, limit, sort, query } = req.query;
     const result = await ProductService.getAllProducts({ page, limit, sort, query });
     const randomCart = JSON.stringify(await CartService.getRandomCart());
@@ -20,6 +20,7 @@ router.get('/', async (req, res) => {
         title: 'Entrega',
         style: 'index.css',
         result,
+        user: req.session.user,
         randomCart
     });
 });
@@ -44,5 +45,46 @@ router.get('/carts/:cid', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+router.get("/login", logged, async (req, res) => {
+
+    res.render(
+        'login',
+        {
+            title: "Ingreso usuario registrado",
+            style: "index.css",
+            loginFailed: req.session.loginFailed ?? false,
+            registerSuccess: req.session.registerSuccess ?? false
+        }
+    );
+});
+
+router.get("/register", logged, async (req, res) => {
+
+    res.render(
+        'register',
+        {
+            title: "Registro de nuevo usuario",
+            style: "index.css",
+            registerFailed: req.session.registerFailed ?? false
+        }
+    );
+});
+
+function auth(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect("/login");
+    }
+
+    next();
+}
+
+function logged(req, res, next) {
+    if (req.session.user) {
+        return res.redirect("/");
+    }
+
+    next();
+}
 
 export default router;

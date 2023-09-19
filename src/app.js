@@ -1,13 +1,16 @@
 import express from "express";
 import handlebars from "express-handlebars";
+import session from 'express-session';
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
+import userRouter from './routes/userRouter.js';
 import __dirname from "./utils/constantsUtil.js";
 import mongoose from "mongoose";
 import http from 'http';
 import { Server } from "socket.io";
 import cartsRouter from "./routes/cartsRouter.js";
 import { messageModel } from "./models/messageModel.js";
+import mongoStore from "connect-mongo";
 
 const uri = "mongodb://127.0.0.1:27017/ecommerce";
 mongoose.connect(uri);
@@ -31,8 +34,23 @@ app.use(express.urlencoded({ extended: true }));
 
 //Routers
 app.use("/api/product", productRoutes);
-app.use("/products", viewsRouter);
+app.use("/", viewsRouter);
 app.use("/api/carts", cartsRouter);
+app.use('/api/sessions', userRouter);
+
+//Session
+app.use(session(
+  {
+      store: mongoStore.create({
+          mongoUrl: uri,
+          mongoOptions: { useUnifiedTopology: true },
+          ttl: 100
+      }),
+      secret: 'secretPhrase',
+      resave: false,
+      saveUninitialized: false
+  }
+));
 
 
 // Configura la comunicación de Socket.IO
