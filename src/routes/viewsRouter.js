@@ -7,7 +7,7 @@ const router = Router();
 const ProductService = new productDBService();
 const CartService = new CartDBManager(); // Crea una instancia del servicio de carrito
 
-router.get('/', auth, async (req, res) => {
+router.get('/products', auth, async (req, res) => {
     const { page, limit, sort, query } = req.query;
     const result = await ProductService.getAllProducts({ page, limit, sort, query });
     const randomCart = JSON.stringify(await CartService.getRandomCart());
@@ -81,7 +81,7 @@ function auth(req, res, next) {
 
 function logged(req, res, next) {
     if (req.session.user) {
-        return res.redirect("/");
+        return res.redirect("/products");
     }
 
     next();

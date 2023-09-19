@@ -1,15 +1,20 @@
 
 <body>
 
-    <h1>Bienvenido {{user.first_name}} {{user.last_name}}</h1>
-    <hr>
+    <div class="userDataBox">
+        <div class="userHeading">
+            <h1 class="userGreeting">Bienvenido {{user.first_name}} {{user.last_name}}</h1>
+            <button class="logoutButton" onclick="logout()">Logout</button>
+        </div>
+        <hr>
 
-    <h2>Datos Básicos</h2>
-    <div class="userData">
-        <p><b>Nombre:</b> {{user.first_name}}</p>
-        <p><b>Apellido:</b> {{user.last_name}}</p>
-        <p><b>Email:</b> {{user.email}}</p>
-        <p><b>Edad:</b> {{user.age}}</p>
+        <h2>Datos Básicos</h2>
+        <div class="userData">
+            <p><b>Nombre:</b> {{user.first_name}}</p>
+            <p><b>Apellido:</b> {{user.last_name}}</p>
+            <p><b>Email:</b> {{user.email}}</p>
+            <p><b>Edad:</b> {{user.age}}</p>
+        </div>
     </div>
 
 
@@ -68,6 +73,12 @@
 
             // Desplazarse hacia abajo para mostrar el mensaje más reciente
             messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function logout() {
+            fetch(`/api/sessions/logout`, {
+                method: 'DELETE',
+            }).then( () => window.location.href = `/login`)
         }
     </script>
 </div>

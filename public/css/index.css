@@ -10,6 +10,25 @@
   align-items: center;
 }
 
+.userDataBox {
+  margin: 0 2.5%;
+}
+
+.userHeading {
+  display: flex;
+  align-content: space-between;
+}
+
+.userGreeting {
+  flex: 1
+}
+
+.logoutButton {
+  align-self: center;
+  height: 40px;
+  width: 100px;
+}
+
 /* Estilos CSS para el chat */
 body {
   font-family: Arial, sans-serif;
@@ -72,10 +91,6 @@ button {
   padding: 5px;
   margin-top: 5px;
   background-color: #64d73e;
-}
-
-hr {
-  width: 95%;
 }
 
 .userData {

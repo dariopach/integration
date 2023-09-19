@@ -32,12 +32,6 @@ app.use(express.urlencoded({ extend: true }));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
-//Routers
-app.use("/api/product", productRoutes);
-app.use("/", viewsRouter);
-app.use("/api/carts", cartsRouter);
-app.use('/api/sessions', userRouter);
-
 //Session
 app.use(session(
   {
@@ -51,6 +45,12 @@ app.use(session(
       saveUninitialized: false
   }
 ));
+
+//Routers
+app.use("/api/product", productRoutes);
+app.use("/", viewsRouter);
+app.use("/api/carts", cartsRouter);
+app.use('/api/sessions', userRouter);
 
 
 // Configura la comunicación de Socket.IO

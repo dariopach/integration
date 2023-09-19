@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import UserService from '../services/userService.js';
 
 const US = new UserService();
@@ -17,17 +17,31 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     try {
-        const { email, password} = req.body;
+        const { email, password } = req.body;
         const { first_name, last_name, age } = await US.login(email, password);
 
-        req.session.user = {first_name, last_name, email, age};
+        req.session.user = { first_name, last_name, email, age };
         req.session.loginFailed = false;
-        res.redirect("/");
+        res.redirect("/products");
     } catch (error) {
         req.session.loginFailed = true;
         req.session.registerSuccess = false;
         res.redirect("/login");
     }
 });
+
+router.delete('/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.status(400).send('Unable to log out')
+            } else {
+                res.send('Logout successful')
+            }
+        });
+    } else {
+        res.end()
+    }
+})
 
 export default router;
