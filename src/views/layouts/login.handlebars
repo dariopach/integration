@@ -1,0 +1,25 @@
+<h1>Ingreso usuario registrado</h1>
+
+<form method="post" action="/api/sessions/login">
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email">
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password">
+
+    <button type="submit">Login</button>
+</form>
+<span><a href="/register" target="_self">Register</a></span>
+
+{{#if loginFailed}}
+    <script type="text/javascript">
+        alert('Login Failed!');
+    </script>
+{{/if}}
+
+{{#if registerSuccess}}
+    <script type="text/javascript">
+        alert('Register Success!');
+    </script>
+{{/if}}
