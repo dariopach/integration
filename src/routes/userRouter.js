@@ -1,6 +1,5 @@
 import {Router} from 'express';
 import passport from 'passport';
-import local from 'passport-local';
 
 const router = Router();
 
@@ -51,6 +50,32 @@ router.get("/failLogin", (req, res) => {
         status: 'error',
         message: 'Failed Login'
     });
+});
+
+router.delete('/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.status(400).send('Unable to log out')
+            } else {
+                res.send('Logout successful')
+            }
+        });
+    } else {
+        res.end()
+    }
+})
+
+router.get("/github", passport.authenticate('github', {scope: ['user:email']}), (req, res) => {
+    res.send({
+        status: 'success',
+        message: 'Success'
+    });
+});
+
+router.get("/githubcallback", passport.authenticate('github', {failureRedirect: '/login'}), (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/');
 });
 
 export default router;
