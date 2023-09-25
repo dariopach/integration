@@ -1,47 +1,56 @@
-import { Router } from 'express';
-import UserService from '../services/userService.js';
+import {Router} from 'express';
+import passport from 'passport';
+import local from 'passport-local';
 
-const US = new UserService();
 const router = Router();
 
-router.post("/register", async (req, res) => {
-    try {
-        await US.createUser(req.body);
-        req.session.registerSuccess = true;
-        res.redirect("/login");
-    } catch (error) {
-        req.session.registerFailed = true;
-        res.redirect("/register");
-    }
-});
-
-router.post("/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const { first_name, last_name, age } = await US.login(email, password);
-
-        req.session.user = { first_name, last_name, email, age };
-        req.session.loginFailed = false;
-        res.redirect("/products");
-    } catch (error) {
-        req.session.loginFailed = true;
-        req.session.registerSuccess = false;
-        res.redirect("/login");
-    }
-});
-
-router.delete('/logout', (req, res) => {
-    if (req.session) {
-        req.session.destroy(err => {
-            if (err) {
-                res.status(400).send('Unable to log out')
-            } else {
-                res.send('Logout successful')
-            }
+router.post(
+    "/register",
+    passport.authenticate('register',{failureRedirect: '/api/sessions/failRegister'}),
+    (req, res) => {
+        res.send({
+            status: 'success',
+            message: 'User Registered'
         });
-    } else {
-        res.end()
     }
-})
+);
+
+router.get("/failRegister", (req, res) => {
+    console.log('Failded Stratergy');
+    res.send({
+        status: 'error',
+        message: 'Failed Register'
+    });
+});
+
+router.post(
+    "/login",
+    passport.authenticate('login',{failureRedirect: '/api/sessions/failLogin'}),
+    async (req, res) => {
+        if (!req.user) {
+            return res.status(400).send({status: "error", error: "Invalid credentials"});
+        }
+
+        req.session.user = {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            email: req.user.email,
+            age: req.user.age
+        }
+
+        res.send({
+            status: 'success',
+            payload: req.user
+        });
+    }
+);
+
+router.get("/failLogin", (req, res) => {
+    console.log('Failded Stratergy');
+    res.send({
+        status: 'error',
+        message: 'Failed Login'
+    });
+});
 
 export default router;

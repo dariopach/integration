@@ -1,16 +1,19 @@
 import express from "express";
 import handlebars from "express-handlebars";
 import session from 'express-session';
+import mongoose from "mongoose";
+import http from 'http';
+import { Server } from "socket.io";
+import mongoStore from "connect-mongo";
+import passport from "passport";
+
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
 import userRouter from './routes/userRouter.js';
 import __dirname from "./utils/constantsUtil.js";
-import mongoose from "mongoose";
-import http from 'http';
-import { Server } from "socket.io";
 import cartsRouter from "./routes/cartsRouter.js";
 import { messageModel } from "./models/messageModel.js";
-import mongoStore from "connect-mongo";
+import initializatePassport from "./config/passportConfig.js";
 
 const uri = "mongodb://127.0.0.1:27017/ecommerce";
 mongoose.connect(uri);
@@ -45,6 +48,10 @@ app.use(session(
       saveUninitialized: false
   }
 ));
+
+initializatePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Routers
 app.use("/api/product", productRoutes);
