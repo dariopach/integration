@@ -38,10 +38,10 @@ const initializatePassport = () => {
                 const user = await userModel.findOne({email: username});
                 if (!user) {
                     console.log('User does not exist');
-                    return (null, false);
+                    return done(null, false);
                 }
                 if(!isValidPassword(user, password)) {
-                    return done (null, false);
+                    return done(null, false);
                 }
                 return done(null, user);
             } catch (error) {
@@ -65,7 +65,7 @@ const initializatePassport = () => {
                 let newUser = {
                     first_name: profile._json.login,
                     last_name: '',
-                    email: '',
+                    email: profile._json.login,
                     age: '',
                     password: ''
                 }
