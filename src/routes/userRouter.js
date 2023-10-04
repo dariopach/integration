@@ -1,8 +1,10 @@
 import {Router} from 'express';
 import passport from 'passport';
+import jwt  from 'jsonwebtoken';
 
 import { SECRET_JWT } from '../utils/constantsUtil.js';
 import userModel from '../models/userModel.js';
+import { isValidPassword } from '../utils/functionsUtil.js';
 
 const router = Router();
 
@@ -28,11 +30,11 @@ router.get("/failRegister", (req, res) => {
 router.post("/login", async (req, res) => {
     const {email, password} = req.body;
     try {
-        const result = await userModel.findOne({ email });
+        const result = await userModel.findOne({ email }).lean();
 
         if (!result) throw new Error('Login error!');
 
-        if (!validatePassword(result, password)) throw new Error ('Login error!');
+        if (!isValidPassword(result, password)) throw new Error ('Login error!');
 
         const user = {
             first_name: result.first_name,
@@ -41,9 +43,9 @@ router.post("/login", async (req, res) => {
             age: result.age
         }
 
-        const token = jwt.sign(result, SECRET_JWT, {espiresIn: '1h'});
+        const token = jwt.sign(result, SECRET_JWT, {expiresIn: '1h'});
 
-        res.cookie('coderCookie', token, {masxAge: 3600000}).send({
+        res.cookie('coderCookie', token, {maxAge: 3600000}).send({
             status: 'success',
             token
         });
