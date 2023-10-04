@@ -1,6 +1,9 @@
 import {Router} from 'express';
 import passport from 'passport';
 
+import { SECRET_JWT } from '../utils/constantsUtil.js';
+import userModel from '../models/userModel.js';
+
 const router = Router();
 
 router.post(
@@ -22,27 +25,35 @@ router.get("/failRegister", (req, res) => {
     });
 });
 
-router.post(
-    "/login",
-    passport.authenticate('login',{failureRedirect: '/api/sessions/failLogin'}),
-    async (req, res) => {
-        if (!req.user) {
-            return res.status(400).send({status: "error", error: "Invalid credentials"});
+router.post("/login", async (req, res) => {
+    const {email, password} = req.body;
+    try {
+        const result = await userModel.findOne({ email });
+
+        if (!result) throw new Error('Login error!');
+
+        if (!validatePassword(result, password)) throw new Error ('Login error!');
+
+        const user = {
+            first_name: result.first_name,
+            last_name: result.last_name,
+            email: result.email,
+            age: result.age
         }
 
-        req.session.user = {
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            email: req.user.email,
-            age: req.user.age
-        }
+        const token = jwt.sign(result, SECRET_JWT, {espiresIn: '1h'});
 
-        res.send({
+        res.cookie('coderCookie', token, {masxAge: 3600000}).send({
             status: 'success',
-            payload: req.user
+            token
+        });
+    } catch (error) {
+        res.send({
+            status: 'error',
+            payload: error.message
         });
     }
-);
+});
 
 router.get("/failLogin", (req, res) => {
     console.log('Failded Stratergy');

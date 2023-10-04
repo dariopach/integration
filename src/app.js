@@ -6,12 +6,14 @@ import http from 'http';
 import { Server } from "socket.io";
 import mongoStore from "connect-mongo";
 import passport from "passport";
+import cookieParser from "cookie-parser";
 
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
 import userRouter from './routes/userRouter.js';
-import __dirname from "./utils/constantsUtil.js";
+import { __dirname } from "./utils/constantsUtil.js";
 import cartsRouter from "./routes/cartsRouter.js";
+import sessionRouter from "./routes/sessionRouter.js";
 import { messageModel } from "./models/messageModel.js";
 import initializatePassport from "./config/passportConfig.js";
 
@@ -34,6 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extend: true }));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 //Session
 app.use(session(
@@ -49,6 +52,7 @@ app.use(session(
   }
 ));
 
+//Passport
 initializatePassport();
 app.use(passport.initialize());
 app.use(passport.session());
@@ -58,6 +62,7 @@ app.use("/api/product", productRoutes);
 app.use("/", viewsRouter);
 app.use("/api/carts", cartsRouter);
 app.use('/api/sessions', userRouter);
+app.use('/api/session', sessionRouter);
 
 
 // Configura la comunicación de Socket.IO
