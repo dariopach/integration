@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import mongoStore from "connect-mongo";
 import passport from "passport";
 import cookieParser from "cookie-parser";
+import 'dotenv/config';
 
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
@@ -17,7 +18,7 @@ import sessionRouter from "./routes/sessionRouter.js";
 import { messageModel } from "./models/messageModel.js";
 import initializatePassport from "./config/passportConfig.js";
 
-const uri = "mongodb://127.0.0.1:27017/ecommerce";
+const uri = process.env.LINK_MONGO;
 mongoose.connect(uri);
 
 const app = express();
