@@ -8,6 +8,7 @@ import mongoStore from "connect-mongo";
 import passport from "passport";
 import cookieParser from "cookie-parser";
 import 'dotenv/config';
+import nodemailer from 'nodemailer';
 
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
@@ -90,6 +91,42 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
       console.log('Un cliente se ha desconectado');
   });
+});
+
+//Send email
+const transport = nodemailer.createTransport({
+  service: 'gmail',
+  port: 587,
+  auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+  } 
+});
+
+app.get('/send/mail', async (req, res) => {
+
+  try {
+      const result = await transport.sendMail({
+          from: 'Ecommerce <dariopach3@gmail.com>',
+          to: 'dariopach@hotmail.com',
+          subject: 'Correo de prueba',
+          html: ` <div>
+                      <h1>Ecommerce</h1>
+                      <p>Gracias por su compra</p>
+                      <img src="cid:Logo"/>
+                  </div>`,
+          attachments: [{
+              filename: 'Logo.jpg',
+              path: 'src\\images\\Logo.jpg',
+              cid: 'Logo'
+          }]
+      });
+  
+      res.send({status: 'success', result});
+  } catch (error) {
+      console.log(error.message);
+      res.status(500).send({status: 'error', message: 'Error in send email!'});
+  }
 });
 
 const PORT = 8080;
