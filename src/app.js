@@ -18,6 +18,7 @@ import cartsRouter from "./routes/cartsRouter.js";
 import sessionRouter from "./routes/sessionRouter.js";
 import { messageModel } from "./models/messageModel.js";
 import initializatePassport from "./config/passportConfig.js";
+import { isAdmin, isUser } from "./utils/authorizationUtil.js";
 
 const uri = process.env.LINK_MONGO;
 mongoose.connect(uri);
@@ -60,9 +61,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Routers
-app.use("/api/product", productRoutes);
+app.use("/api/product", isAdmin, productRoutes);
 app.use("/", viewsRouter);
-app.use("/api/carts", cartsRouter);
+app.use("/api/carts", isUser, cartsRouter);
 app.use('/api/sessions', userRouter);
 app.use('/api/session', sessionRouter);
 

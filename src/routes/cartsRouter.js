@@ -1,6 +1,9 @@
 import express from 'express';
 import { cartModel } from '../models/cartModel.js';
 import { CartDBManager } from '../services/cartDBManager.js';
+import ticketModel from '../models/ticketModel.js'
+import { productModel } from '../models/productModel.js'
+import { generateUniqueCode } from '../utils/uniqueCodeUtil.js';
 
 const cartsRouter = express.Router();
 const cartService = new CartDBManager();
@@ -105,6 +108,57 @@ cartsRouter.delete('/:cid', async (req, res) => {
       res.json({ message: result });
   } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Finish purchase
+cartsRouter.post('/:cid/purchase', async (req, res) => {
+  const cartId = req.params.cid;
+
+  try {
+    const cart = await cartModel.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+
+    const productsToPurchase = [];
+    const productsNotPurchased = [];
+
+    for (const productItem of cart.products) {
+      const product = await productModel.findById(productItem.product);
+
+      if (product) {
+        if (productItem.quantity <= product.stock) {
+          product.stock -= productItem.quantity;
+          await product.save();
+          productsToPurchase.push(productItem);
+        } else {
+          productsNotPurchased.push(productItem);
+        }
+      }
+    }
+
+    const totalAmount = await productsToPurchase.reduce(async (totalPromise, productItem) => {
+      const total = await totalPromise;
+      const product = await productModel.findById(productItem.product);
+      return total + product.price * productItem.quantity;
+    }, Promise.resolve(0))
+
+    const purchaserEmail = cart.purchaser;
+
+    const newTicket = await ticketModel.create({
+      code: generateUniqueCode(),
+      amount: totalAmount,
+      purchaser: purchaserEmail,
+      products: productsToPurchase, 
+    });
+
+    cart.products = productsNotPurchased;
+    await cart.save();
+
+    res.status(201).json({ ticket: newTicket, notPurchasedProducts: productsNotPurchased });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
