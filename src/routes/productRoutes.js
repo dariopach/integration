@@ -3,6 +3,9 @@ import  express  from 'express';
 import { productDBService } from '../services/productDBManager.js';
 import { uploader } from '../utils/multerUtil.js';
 import generateMockProducts from '../utils/fakerUtil.js';
+/*import customError from '../errorHandler/customError.js'
+import {ggenerateProductErrorInfo} from '../errorHandler/info.js'
+import ErrorCodes from '../errorHandler/enum.js';*/
 
 const router = Router();
 const ProductService = new productDBService();
@@ -44,6 +47,14 @@ router.post('/', uploader.array('thumbnails', 2), async (req, res) => {
     res.json({
         message: result
     });
+    /*
+    if (!title || !description || !price || !code || !stock || !category) {
+        CustomError.createError({
+            name: 'Product creation error',
+            cause: generateProductErrorInfo({title, description, price, code, stock, category}),
+            message: 'Error trying to create product',
+            code: ErrorCodes.INVALID_TYPES_ERROR,
+            });*/
 });
 
 // Endpoint fake products

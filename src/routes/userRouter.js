@@ -6,6 +6,7 @@ import { SECRET_JWT } from '../utils/constantsUtil.js';
 import userModel from '../models/userModel.js';
 import { isValidPassword } from '../utils/functionsUtil.js';
 
+
 const router = Router();
 
 router.post(
