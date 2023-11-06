@@ -15,6 +15,7 @@ router.get('/current', (req, res, next) => {
     const userDTO = {
       id: user.email,
       username: user.first_name, 
+      role: user.role,
     };
 
     req.user = userDTO; 

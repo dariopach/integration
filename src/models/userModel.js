@@ -23,6 +23,33 @@ const userSchema = mongoose.Schema({
     password: {
         type: String
     },
+    cart: {
+        type:[
+            {
+                cartInfo: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "carts"
+                }
+            }
+        ],
+        default: [],
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    ticket: {
+        type:[
+            {
+                ticketInfo: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "tickets"
+                }
+            }
+        ],
+        default: [],
+    },
 });
 
 const userModel = mongoose.model(userCollection, userSchema);

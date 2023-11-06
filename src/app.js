@@ -19,6 +19,7 @@ import sessionRouter from "./routes/sessionRouter.js";
 import { messageModel } from "./models/messageModel.js";
 import initializatePassport from "./config/passportConfig.js";
 import { isAdmin, isUser } from "./utils/authorizationUtil.js";
+import errorHandler from './errorHandler/index.js'
 
 const uri = process.env.LINK_MONGO;
 mongoose.connect(uri);
@@ -129,6 +130,10 @@ app.get('/send/mail', async (req, res) => {
       res.status(500).send({status: 'error', message: 'Error in send email!'});
   }
 });
+
+//Error handler
+
+app.use(errorHandler);
 
 const PORT = 8080;
 server.listen(PORT, () => {
