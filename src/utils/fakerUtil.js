@@ -10,7 +10,7 @@ function generateMockProducts(count) {
         code: faker.lorem.slug(),
         price: faker.commerce.price(),
         status: faker.datatype.boolean(),
-        stock: faker.datatype.number.int({ min: 0, max: 100 }),
+        stock: faker.number.int({ min: 0, max: 100 }),
         category: faker.commerce.product(),
         availability: faker.datatype.boolean(),
         thumbnails: faker.image.url()

@@ -3,9 +3,9 @@ import  express  from 'express';
 import { productDBService } from '../services/productDBManager.js';
 import { uploader } from '../utils/multerUtil.js';
 import generateMockProducts from '../utils/fakerUtil.js';
-/*import customError from '../errorHandler/customError.js'
-import {ggenerateProductErrorInfo} from '../errorHandler/info.js'
-import ErrorCodes from '../errorHandler/enum.js';*/
+import customError from '../errorHandler/customError.js'
+import {generateProductErrorInfo} from '../errorHandler/info.js'
+import ErrorCodes from '../errorHandler/enum.js';
 
 const router = Router();
 const ProductService = new productDBService();
@@ -35,26 +35,31 @@ router.get('/', async (req, res) => {
 
 // Endpoint para crear un nuevo producto
 router.post('/', uploader.array('thumbnails', 2), async (req, res) => {
-    if (!req.files) {
-        req.body.thumbnails = [];
-        req.files?.forEach((file) => {
-            req.body.thumbnails.push(file.filename);
+    try {
+        if (!req.files) {
+            req.body.thumbnails = [];
+            req.files?.forEach((file) => {
+                req.body.thumbnails.push(file.filename);
+            });
+        }
+        const {title, description, price, code, stock, category} = req.body;
+        if (!title || !description || !price || !code || !stock || !category) {
+            customError.createError({
+                name: 'Product creation error',
+                cause: generateProductErrorInfo({ title, description, price, code, stock, category }),
+                message: 'Error trying to create product',
+                code: ErrorCodes.INVALID_TYPES_ERROR,
+            });
+        }
+    
+        const result = await ProductService.createProduct(req.body);
+    
+        res.json({
+            message: result
         });
-    }
-
-    const result = await ProductService.createProduct(req.body);
-
-    res.json({
-        message: result
-    });
-    /*
-    if (!title || !description || !price || !code || !stock || !category) {
-        CustomError.createError({
-            name: 'Product creation error',
-            cause: generateProductErrorInfo({title, description, price, code, stock, category}),
-            message: 'Error trying to create product',
-            code: ErrorCodes.INVALID_TYPES_ERROR,
-            });*/
+    } catch (error) {
+      res.status(500).json(error);
+    }    
 });
 
 // Endpoint fake products

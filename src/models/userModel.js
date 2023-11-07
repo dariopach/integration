@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
             {
                 cartInfo: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: "carts"
+                    ref: "cart"
                 }
             }
         ],
@@ -44,7 +44,7 @@ const userSchema = mongoose.Schema({
             {
                 ticketInfo: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: "tickets"
+                    ref: "ticket"
                 }
             }
         ],

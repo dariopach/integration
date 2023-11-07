@@ -59,6 +59,7 @@ app.use(session(
 //Passport
 initializatePassport();
 app.use(passport.initialize());
+app.use(passport.authenticate('jwt'));
 app.use(passport.session());
 
 //Routers
