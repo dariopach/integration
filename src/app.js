@@ -9,6 +9,7 @@ import passport from "passport";
 import cookieParser from "cookie-parser";
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
+import winston from "winston";
 
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
@@ -140,6 +141,24 @@ app.use(errorHandler);
 //Logger
 
 app.use(addLogger);
+
+// Configuración del logger para desarrollo
+const developmentLogger = winston.createLogger({
+  level: 'debug',
+  format: winston.format.simple(),
+  transports: [
+    new winston.transports.Console(),
+  ],
+});
+
+// Configuración del logger para producción
+const productionLogger = winston.createLogger({
+  level: 'info',
+  format: winston.format.simple(),
+  transports: [
+    new winston.transports.File({ filename: 'errors.log', level: 'error' }),
+  ],
+});
 
 app.get('/loggerTest', (req, res) => {
   req.logger.debug('Debug log: This is a debug message');
