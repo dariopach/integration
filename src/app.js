@@ -20,6 +20,7 @@ import { messageModel } from "./models/messageModel.js";
 import initializatePassport from "./config/passportConfig.js";
 import { isAdmin, isUser } from "./utils/authorizationUtil.js";
 import errorHandler from './errorHandler/index.js'
+import { addLogger } from './utils/loggerCustom.js';
 
 const uri = process.env.LINK_MONGO;
 mongoose.connect(uri);
@@ -135,6 +136,20 @@ app.get('/send/mail', async (req, res) => {
 //Error handler
 
 app.use(errorHandler);
+
+//Logger
+
+app.use(addLogger);
+
+app.get('/loggerTest', (req, res) => {
+  req.logger.debug('Debug log: This is a debug message');
+  req.logger.info('Info log: This is an info message');
+  req.logger.warn('Warning log: This is a warning message');
+  req.logger.error('Error log: This is an error message');
+  req.logger.fatal('Fatal log: This is a fatal message');
+
+  res.send('Logs with custom logger have been created. Check the console.');
+});
 
 const PORT = 8080;
 server.listen(PORT, () => {
