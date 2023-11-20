@@ -71,6 +71,18 @@ router.get("/register", logged, async (req, res) => {
     );
 });
 
+
+router.get("/recovery", logged, async (req, res) => {
+
+    res.render(
+        'recovery',
+        {
+            title: "Recuperar contraseña",
+            style: "index.css",
+        }
+    );
+});
+
 function auth(req, res, next) {
     if (!req.session.user) {
         return res.redirect("/login");

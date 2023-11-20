@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
             age: result.age
         }
 
-        const token = jwt.sign(result, SECRET_JWT, {expiresIn: '1h'});
+        const token = jwt.sign(user, SECRET_JWT, {expiresIn: '1h'});
 
         res.cookie('coderCookie', token, {maxAge: 3600000}).send({
             status: 'success',
@@ -90,6 +90,10 @@ router.get("/github", passport.authenticate('github', {scope: ['user:email']}), 
 router.get("/githubcallback", passport.authenticate('github', {failureRedirect: '/login'}), (req, res) => {
     req.session.user = req.user;
     res.redirect('/products');
+});
+
+router.get('/recovery/:token', (req, res) => {
+    res.send(req.params.token);
 });
 
 export default router;
