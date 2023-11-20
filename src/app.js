@@ -23,6 +23,8 @@ import { isAdmin, isUser } from "./utils/authorizationUtil.js";
 import errorHandler from './errorHandler/index.js';
 import { addLogger } from './utils/loggerCustom.js';
 import notificationRouter from './routes/notificationRouter.js';
+
+const uri = process.env.LINK_MONGO;
 mongoose.connect(uri);
 
 const app = express();
