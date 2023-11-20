@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import jwt  from 'jsonwebtoken';
 
 import { SECRET_JWT } from '../utils/constantsUtil.js';
-import userModel from "../models/userModel";
+import userModel from "../models/userModel.js";
 
 const router = Router();
 const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -63,7 +63,7 @@ router.post('/recovery', async (req, res) => {
 
         const token = jwt.sign(user, SECRET_JWT, {expiresIn: '1h'});
 
-        const link = `http://localhost8080/api/sessions/recovery/${token}`;
+        const link = `http://localhost8080/changePass/${token}`;
 
         await transport.sendMail({
             from: 'Ecommerce <dariopach3@gmail.com>',
@@ -73,12 +73,13 @@ router.post('/recovery', async (req, res) => {
                         <h1>Recuperacion de contraseña</h1>
                         <p>Para recuperar contraseña haga click en el siguiente <a href="${link}">link</a></p>
                         <img src="cid:Logo"/>
-                    </div>`,
+                    </div>`
         });
+
+        res.cookie('notification', true, {maxAge: 5000}).redirect('/recovery');
     
-        res.send('Email enviado con exito');
     } catch (error) {
-        res.send(error.message);
+        res.cookie('notification', false, {maxAge: 5000}).redirect('/recovery');
     }
 });
 

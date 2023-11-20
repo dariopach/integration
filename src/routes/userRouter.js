@@ -4,7 +4,7 @@ import jwt  from 'jsonwebtoken';
 
 import { SECRET_JWT } from '../utils/constantsUtil.js';
 import userModel from '../models/userModel.js';
-import { isValidPassword } from '../utils/functionsUtil.js';
+import { isValidPassword, createHash} from '../utils/functionsUtil.js';
 
 
 const router = Router();
@@ -92,8 +92,28 @@ router.get("/githubcallback", passport.authenticate('github', {failureRedirect: 
     res.redirect('/products');
 });
 
-router.get('/recovery/:token', (req, res) => {
-    res.send(req.params.token);
-});
+router.post('/changePass', async (req, res) => {
+
+    const { token, password } = req.body;
+    try {
+            const user = jwt.verify(token, SECRET_JWT);
+        if (!user) {
+            return res.redirect('/recovery')
+        }
+
+        const fullUser = await userModel.findOne({_id: user.id});
+        if (isValidPassword({password: fullUser.password}, password)) {
+            return res.cookie('errorMessage', 'No se permite reutilizar la contraseña', {maxAge: 5000}).redirect(`/changePass/${token}`)
+        }
+
+        const newPassword = createHash(password);
+
+        await userModel.updateOne({ _id: user.id}, {password});
+
+        return res.redirect('/login')
+    } catch {
+       return res.redirect('/recovery');
+    }
+})
 
 export default router;

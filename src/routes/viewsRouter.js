@@ -1,7 +1,11 @@
 import { Router } from 'express';
+import jwt  from 'jsonwebtoken';
+
 import { productDBService } from '../services/productDBManager.js';
 import { CartDBManager } from '../services/cartDBManager.js';
 import { cartModel } from '../models/cartModel.js';
+import { SECRET_JWT } from '../utils/constantsUtil.js';
+
 
 const router = Router();
 const ProductService = new productDBService();
@@ -74,11 +78,37 @@ router.get("/register", logged, async (req, res) => {
 
 router.get("/recovery", logged, async (req, res) => {
 
+    console.log(req.cookies);
     res.render(
         'recovery',
         {
             title: "Recuperar contraseña",
             style: "index.css",
+            notification: req.cookies.notification ?? false
+        }
+    );
+});
+
+router.get("/changePass/:token", async (req, res) => {
+
+    try {
+        const token = req.params.token ?? null;
+        const user = jwt.verify(token, SECRET_JWT);
+        
+        if(!user) return res.redirect('/recovery') 
+    } catch {
+        return res.redirect('/recovery') 
+    }
+
+    
+    res.render(
+        'changePass',
+        {
+            title: "Recuperar contraseña",
+            style: "index.css",
+            error: req.cookies.recovery.errorMessage ?? false,
+            message: req.cookies.recovery.errorMessage ?? '',
+            token
         }
     );
 });
