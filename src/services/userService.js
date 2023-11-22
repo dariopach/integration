@@ -29,4 +29,25 @@ class UserService {
 
 }
 
-export default UserService;
+const togglePremiumStatus = async (req, res) => {
+    const userId = req.params.uid;
+  
+    try {
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado.' });
+      }
+  
+      // Cambiar el rol del usuario entre "user" y "premium"
+      user.role = user.role === 'user' ? 'premium' : 'user';
+  
+      await user.save();
+  
+      res.status(200).json({ message: 'Rol de usuario actualizado exitosamente.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al cambiar el rol de usuario.' });
+    }
+  };
+
+  export { UserService, togglePremiumStatus };

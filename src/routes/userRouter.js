@@ -5,9 +5,13 @@ import jwt  from 'jsonwebtoken';
 import { SECRET_JWT } from '../utils/constantsUtil.js';
 import userModel from '../models/userModel.js';
 import { isValidPassword, createHash} from '../utils/functionsUtil.js';
+import { togglePremiumStatus } from '../services/userService.js';
 
 
 const router = Router();
+
+// Ruta para cambiar el rol de un usuario a premium o viceversa
+router.put('/premium/:uid', togglePremiumStatus);
 
 router.post(
     "/register",
@@ -37,14 +41,14 @@ router.post("/login", async (req, res) => {
 
         if (!isValidPassword(result, password)) throw new Error ('Login error!');
 
-        const user = {
+       const user = {
             first_name: result.first_name,
             last_name: result.last_name,
             email: result.email,
             age: result.age
         }
 
-        const token = jwt.sign(user, SECRET_JWT, {expiresIn: '1h'});
+        const token = jwt.sign(result, SECRET_JWT, {expiresIn: '1h'});
 
         res.cookie('coderCookie', token, {maxAge: 3600000}).send({
             status: 'success',

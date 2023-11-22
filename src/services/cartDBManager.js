@@ -43,17 +43,19 @@ class CartDBManager {
         }
     }
 
-    async updateProductQuantity(cartId, productId, quantity) {
+    async updateProductQuantity(cartId, productId, quantity, userRole) {
         try {
             const cart = await cartModel.findById(cartId).populate('products.product').lean();
-            let products = []
+            let products = [];
+
             cart.products.forEach(product => {
                 if (product.product._id.toString() === productId) {
-                    product.quantity += quantity;
-                    products.push(product);
-                } else {
-                    products.push(product);
+                    // Verificar que el usuario no sea premium y el producto le pertenezca
+                    if (!(userRole === 'premium' && product.product.owner === 'admin')) {
+                        product.quantity += quantity;
+                    }
                 }
+                products.push(product);
             });
             const updatedCart = await this.updateCart(cartId, products);
             let total = 0;

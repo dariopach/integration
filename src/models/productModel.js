@@ -38,6 +38,10 @@ const productSchema = new mongoose.Schema({
     },
     thumbnails: {
         type: Array
+    },
+    owner: {
+        type: String,
+        ref: 'User'
     }
 });
 
