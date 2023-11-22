@@ -91,8 +91,10 @@ router.get("/recovery", logged, async (req, res) => {
 
 router.get("/changePass/:token", async (req, res) => {
 
+const token = req.params.token ?? null;
+
     try {
-        const token = req.params.token ?? null;
+
         const user = jwt.verify(token, SECRET_JWT);
         
         if(!user) return res.redirect('/recovery') 
@@ -102,12 +104,12 @@ router.get("/changePass/:token", async (req, res) => {
 
     
     res.render(
-        'changePass',
+        'changePassword',
         {
             title: "Recuperar contraseña",
             style: "index.css",
-            error: req.cookies.recovery.errorMessage ?? false,
-            message: req.cookies.recovery.errorMessage ?? '',
+            error: req.cookies.errorMessage ?? false,
+            message: req.cookies.errorMessage ?? '',
             token
         }
     );

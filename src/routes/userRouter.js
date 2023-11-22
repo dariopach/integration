@@ -106,13 +106,13 @@ router.post('/changePass', async (req, res) => {
         }
 
         const fullUser = await userModel.findOne({_id: user.id});
-        if (isValidPassword({password: fullUser.password}, password)) {
+        if (isValidPassword(fullUser, password)) {
             return res.cookie('errorMessage', 'No se permite reutilizar la contraseña', {maxAge: 5000}).redirect(`/changePass/${token}`)
         }
 
         const newPassword = createHash(password);
 
-        await userModel.updateOne({ _id: user.id}, {password});
+        await userModel.updateOne({ _id: user.id}, {password: newPassword});
 
         return res.redirect('/login')
     } catch {

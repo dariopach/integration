@@ -63,7 +63,7 @@ router.post('/recovery', async (req, res) => {
 
         const token = jwt.sign(user, SECRET_JWT, {expiresIn: '1h'});
 
-        const link = `http://localhost8080/changePass/${token}`;
+        const link = `http://localhost:8080/changePass/${token}`;
 
         await transport.sendMail({
             from: 'Ecommerce <dariopach3@gmail.com>',
