@@ -72,4 +72,37 @@ router.post('/mockingproducts', (req, res) => {
     }
   });
 
+// Clase de eliminación de producto
+class DeleteProductHandler {
+    async handle(req, res) {
+      const productId = req.params.productId;
+      const userRole = req.user.role; 
+      const userEmail = req.user.email; 
+  
+      try {
+        const product = await ProductService.getProductById(productId);
+
+        authenticateRole(userRole, ['admin', 'premium']);
+  
+        if (product.owner && product.owner !== userEmail) {
+          customError.createError({
+            name: 'Product deletion error',
+            cause: generateProductErrorInfo({ productId }),
+            message: 'You do not have permission to delete this product.',
+            code: ErrorCodes.PERMISSION_ERROR,
+          });
+        }
+  
+        // Borrar el producto
+        const result = await ProductService.deleteProduct(productId);
+        res.json({ message: 'Product deleted successfully.' });
+      } catch (error) {
+        res.status(error.status || 500).json({ error: error.message });
+      }
+    }
+  }
+  
+  // Endpoint para eliminar un producto
+  router.delete('/:productId', new DeleteProductHandler().handle);
+
 export default router;
