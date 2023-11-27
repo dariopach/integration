@@ -13,6 +13,18 @@ const router = Router();
 // Ruta para cambiar el rol de un usuario a premium o viceversa
 router.put('/premium/:uid', togglePremiumStatus);
 
+router.delete('/products/:productId', async (req, res) => {
+    const productId = req.params.productId;
+    const userRole = req.user.role;
+  
+    try {
+      const result = await productDBManager.deleteProduct(productId, userRole);
+      res.status(200).json({ message: 'Producto eliminado exitosamente.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al eliminar el producto.' });
+    }
+  });
+
 router.post(
     "/register",
     passport.authenticate('register',{failureRedirect: '/api/sessions/failRegister'}),
