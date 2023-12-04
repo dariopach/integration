@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser";
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
 import winston from "winston";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
@@ -171,6 +173,24 @@ app.get('/loggerTest', (req, res) => {
 
   res.send('Logs with custom logger have been created. Check the console.');
 });
+
+//Swagger
+
+const swaggerOptions= {
+  definition: {
+    openapi: '3.0.3',
+    info: {
+      title: 'Documentacion de API Ecommerce',
+      description: 'Ecommerce'
+    }
+  },
+  apis: [`${__dirname}/../../docs/**/*.yaml`]
+}
+
+const specs= swaggerJSDoc(swaggerOptions);
+
+app.use('/api-docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
 
 const PORT = 8080;
 server.listen(PORT, () => {

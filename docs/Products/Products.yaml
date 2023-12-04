@@ -1,0 +1,131 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Products
+      responses:
+        200:
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        500:
+          description: Error interno del servidor, usualmente generado por una query defectuosa.
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product' 
+      responses:
+        201:
+          description: Producto creado satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product created
+        500:
+          description: Error interno del servidor al intentar crear el producto.
+
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un solo producto por su ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID autogenerado por MongoDB
+        title:
+          type: string
+          description: Título del producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        code:
+          type: string
+          description: Código del producto
+        stock:
+          type: number
+          description: Stock disponible
+        category:
+          type: string
+          description: Categoría del producto
+        thumbnails:
+          type: array
+          items:
+            type: string
+          description: Lista de nombres de archivos de las miniaturas
+      example:
+        _id: '6546924fc61d101fcba36f42'
+        title: Laptop
+        description: Potente laptop para desarrollo
+        price: 1200
+        code: LAP123
+        stock: 50
+        category: Electronics
+        thumbnails: ['thumb1.jpg', 'thumb2.jpg']
+
+  requestBodies:
+    CreateProductRequestBody:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Título del producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        code:
+          type: string
+          description: Código del producto
+        stock:
+          type: number
+          description: Stock disponible
+        category:
+          type: string
+          description: Categoría del producto
+      example:
+        title: Smartphone
+        description: Teléfono inteligente de última generación
+        price: 800
+        code: PHONE456
+        stock: 30
+        category: Electronics
