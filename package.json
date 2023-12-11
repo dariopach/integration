@@ -5,7 +5,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "nodemon src/app.js"
   },
   "keywords": [],
@@ -34,6 +34,9 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.2.0"
+    "@faker-js/faker": "^8.2.0",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }
