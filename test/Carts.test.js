@@ -3,7 +3,6 @@ import chai from 'chai';
 import { productModel } from '../src/models/productModel.js';
 
 const requester = supertest('http://localhost:8080');
-/*const { describe, it } = mocha;*/
 const expect = chai.expect;
 
 describe('Testing Carts Router', () => {
