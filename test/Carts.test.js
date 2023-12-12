@@ -1,18 +1,37 @@
 import supertest from 'supertest';
 import chai from 'chai';
-import { productModel } from '../src/models/productModel.js';
 
 const requester = supertest('http://localhost:8080');
 const expect = chai.expect;
 
 describe('Testing Carts Router', () => {
   let token;
+  let tokenAdmin;
   let cartId;
+  let productId;
   const mockUser = {
     first_name: 'John',
     last_name: 'Doe',
     email: 'john.doe@example.com',
     password: 'password123',
+  };
+
+  const mockUserAdmin = {
+    first_name: 'John',
+    last_name: 'Doe',
+    email: 'john.doe2@example.com',
+    password: 'password123',
+    role: 'admin'
+  };
+
+  const productData = {
+    title: 'Test Product',
+    description: 'A test product description',
+    price: 10.99,
+    code: 'ABC123',
+    stock: 50,
+    category: 'Test Category',
+    availability: true
   };
 
   before((done) => {
@@ -24,8 +43,17 @@ describe('Testing Carts Router', () => {
           console.error('Error registering:', err);
           done(err);
         } else {
-          // Handle the response if needed
-          done();
+          requester
+          .post('/api/sessions/register')
+          .send(mockUserAdmin)
+          .end((err, res) => {
+            if (err) {
+              console.error('Error registering:', err);
+              done(err);
+            } else {
+              done();
+            }
+          });
         }
       });
   });
@@ -33,6 +61,11 @@ describe('Testing Carts Router', () => {
   beforeEach((done) => {
     const credentials = {
       email: 'john.doe@example.com',
+      password: 'password123',
+    };
+
+    const credentialsAdmin = {
+      email: 'john.doe2@example.com',
       password: 'password123',
     };
 
@@ -45,10 +78,35 @@ describe('Testing Carts Router', () => {
           done(err);
         } else {
           token = res.headers['set-cookie'][0];
-          done();
+          requester
+            .post('/api/sessions/login')
+            .send(credentialsAdmin)
+            .end((err, res2) => {
+              if (err) {
+                console.error('Error logging:', err);
+                done(err);
+              } else {
+                tokenAdmin = res2.headers['set-cookie'][0];
+                requester
+                  .post('/api/product')
+                  .set('Cookie', `${tokenAdmin}`)
+                  .send(productData)
+                  .end((err, res) => {
+                    if (err) {
+                      console.error('Error registering:', err);
+                      done(err);
+                    } else {
+                      productId = res.body.message._id;
+                      done();
+                    }
+                  });
+              }
+            });
         }
       });
   });
+
+  
 
   it('should create a new cart with a status of 201', async () => {
     const response = await requester.post('/api/carts').set('Cookie', `${token}`);
@@ -58,7 +116,7 @@ describe('Testing Carts Router', () => {
 
   it('should add a product to the cart with a status of 200', async () => {
     const response = await requester
-      .post(`/api/carts/${cartId}/product/64fe38f60678c670690132fa`)
+      .post(`/api/carts/${cartId}/product/${productId}`)
       .set('Cookie', `${token}`)
       .send({ quantity: 2 });
 
@@ -69,7 +127,7 @@ describe('Testing Carts Router', () => {
 
   it('should delete a product from the cart with a status of 200', async () => {
     const response = await requester
-      .delete(`/api/carts/${cartId}/products/64fe38f60678c670690132fa`)
+      .delete(`/api/carts/${cartId}/products/${productId}`)
       .set('Cookie', `${token}`);
 
     expect(response.status).to.equal(200);
@@ -89,7 +147,7 @@ describe('Testing Carts Router', () => {
 
   it('should update product quantity in the cart with a status of 200', async () => {
     const response = await requester
-      .put(`/api/carts/${cartId}/products/64fe38f60678c670690132fa`)
+      .put(`/api/carts/${cartId}/products/${productId}`)
       .set('Cookie', `${token}`)
       .send({ quantity: 3 });
 
@@ -125,8 +183,18 @@ describe('Testing Carts Router', () => {
           console.error('Error deleting session:', err);
           done(err);
         } else {
-          // Handle the response if needed
-          done();
+          requester
+            .delete('/api/sessions/delete')
+            .send({ email: 'john.doe2@example.com' })
+            .end((err, res) => {
+              if (err) {
+                console.error('Error deleting session:', err);
+                done(err);
+              } else {
+                // Handle the response if needed
+                done();
+              }
+            });
         }
       });
   });

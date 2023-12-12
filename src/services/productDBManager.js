@@ -95,7 +95,7 @@ class productDBService{
 
     
     async createProduct(product, userRole) {
-        const { title, description, code, price, stock, category, thumbnails, owner } = product;
+        const { title, description, code, price, stock, category, thumbnails, owner, availability } = product;
 
         if (!title || !description || !code || !price || !stock || !category) {
             return "Error creating product";
@@ -109,13 +109,14 @@ class productDBService{
             status: true,
             stock,
             category,
+            availability: availability ?? false,
             thumbnails: thumbnails ?? [],
             owner: owner || (userRole === 'premium' ? 'admin' : 'premium'),
         };
 
         try {
             const result = await productModel.create(newProduct);
-            return 'New product created';
+            return result;
         } catch (error) {
             console.error(error.message);
             return 'Error creating new product';
