@@ -91,6 +91,10 @@ class CartDBManager {
         }
     }
 
+    async clearCart(cartId) {
+        return this.updateCart(cartId, []);
+    }
+
     async deleteCart(cartId) {
         try {
             const result = await cartModel.findByIdAndDelete(cartId);

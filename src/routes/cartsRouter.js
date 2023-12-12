@@ -144,7 +144,7 @@ cartsRouter.post('/:cid/purchase', async (req, res) => {
       return total + product.price * productItem.quantity;
     }, Promise.resolve(0))
 
-    const purchaserEmail = cart.purchaser;
+    const purchaserEmail = req.user.email;
 
     const newTicket = await ticketModel.create({
       code: generateUniqueCode(),
@@ -152,6 +152,7 @@ cartsRouter.post('/:cid/purchase', async (req, res) => {
       purchaser: purchaserEmail,
       products: productsToPurchase, 
     });
+
 
     cart.products = productsNotPurchased;
     await cart.save();

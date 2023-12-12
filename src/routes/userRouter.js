@@ -36,6 +36,26 @@ router.post(
     }
 );
 
+router.delete("/delete", async (req, res) => {
+    const {email} = req.body;
+
+    try {
+        const result = await userModel.deleteOne({ email: email });
+
+        if (!result) throw new Error('Delete Error');
+
+        res.send({
+            status: 'success',
+            message: 'User Deleted'
+        });
+    } catch (error) {
+        res.send({
+            status: 'error',
+            payload: error.message
+        });
+    }
+});
+
 router.get("/failRegister", (req, res) => {
     console.log('Failded Stratergy');
     res.send({

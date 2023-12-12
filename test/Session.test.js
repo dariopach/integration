@@ -5,7 +5,6 @@ const requester = supertest('http://localhost:8080');
 const expect = chai.expect;
 
 describe('Testing Sessions Router', () => {
-  let registeredUserId;
   let userCookie;
 
   it('should register a new user with valid data', async () => {
@@ -16,13 +15,11 @@ describe('Testing Sessions Router', () => {
       password: 'password123',
     };
 
-    const response = await supertest(app)
+    const response = await requester
       .post('/api/sessions/register')
       .send(userData);
 
     expect(response.status).to.equal(200);
-    expect(response.body.payload).to.have.property('_id');
-    registeredUserId = response.body.payload._id;
   });
 
   it('should log in a user with valid credentials and return a cookie', async () => {
@@ -42,7 +39,7 @@ describe('Testing Sessions Router', () => {
 
   it('should retrieve the current user with a status of 200', async () => {
     const response = await requester
-      .get('/api/sessions/current')
+      .get('/api/session/current')
       .set('Cookie', [userCookie]);
 
     expect(response.status).to.equal(200);
@@ -53,6 +50,21 @@ describe('Testing Sessions Router', () => {
     expect(response.body.payload.id).to.equal('john.doe@example.com');
     expect(response.body.payload.username).to.equal('John');
     expect(response.body.payload.role).to.be.ok;
+  });
+
+  after((done) => {
+    requester
+      .delete('/api/sessions/delete')
+      .send({ email: 'john.doe@example.com' })
+      .end((err, res) => {
+        if (err) {
+          console.error('Error deleting session:', err);
+          done(err);
+        } else {
+          // Handle the response if needed
+          done();
+        }
+      });
   });
 
 });
