@@ -16,7 +16,7 @@ describe('Testing Sessions Router', () => {
       password: 'password123',
     };
 
-    const response = await supertest(app)
+    const response = await requester
       .post('/api/sessions/register')
       .send(userData);
 
