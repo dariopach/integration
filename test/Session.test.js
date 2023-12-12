@@ -42,7 +42,7 @@ describe('Testing Sessions Router', () => {
 
   it('should retrieve the current user with a status of 200', async () => {
     const response = await requester
-      .get('/api/sessions/current')
+      .get('/api/session/current')
       .set('Cookie', [userCookie]);
 
     expect(response.status).to.equal(200);
