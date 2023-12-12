@@ -67,6 +67,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Routers
+app.use("/api/product", isAdmin, productRoutes);
 app.use("/", viewsRouter);
 app.use('/api/sessions', userRouter);
 app.use('/api/session', sessionRouter);
