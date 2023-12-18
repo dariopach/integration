@@ -11,6 +11,7 @@ import { uploader } from '../utils/multerUtil.js'
 import { isUser } from '../utils/authorizationUtil.js';
 
 const router = Router();
+const userService = new UserService();
 
 // Ruta para cambiar el rol de un usuario a premium o viceversa
 router.put('/premium/:uid', togglePremiumStatus);
@@ -167,6 +168,6 @@ router.post('/changePass', async (req, res) => {
     }
 })
 
-router.post('/:uid/documents',isUser, uploader.array('docs', 3 ), UserService.uploadDocuments)
+router.post('/:uid/documents',isUser, uploader.array('docs', 3 ), userService.uploadDocuments)
 
 export default router;

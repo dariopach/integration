@@ -1,6 +1,6 @@
 import userModel from "../models/userModel.js";
 import {createHash, isValidPassword} from '../utils/functionsUtil.js';
-import { __dirname } from "./utils/constantsUtil.js";
+import { __dirname } from "../utils/constantsUtil.js";
 
 class UserService {
 
