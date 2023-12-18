@@ -1,12 +1,14 @@
 import {Router} from 'express';
 import passport from 'passport';
 import jwt  from 'jsonwebtoken';
+import { format } from 'date-fns'
 
 import { SECRET_JWT } from '../utils/constantsUtil.js';
 import userModel from '../models/userModel.js';
 import { isValidPassword, createHash} from '../utils/functionsUtil.js';
-import { togglePremiumStatus } from '../services/userService.js';
-
+import { UserService, togglePremiumStatus } from '../services/userService.js';
+import { uploader } from '../utils/multerUtil.js'
+import { isUser } from '../utils/authorizationUtil.js';
 
 const router = Router();
 
@@ -86,6 +88,19 @@ router.post("/login", async (req, res) => {
             status: 'success',
             token
         });
+
+        //updated last connection
+        const updateLastConnection = async () => {
+            try {
+                const lastConnection = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+                await UserService.updateUser(user, { lastConnection });
+                console.log('Last connection updated successfully');
+            } catch (error) {
+                console.error('Error updating last connection:', error.message);
+            }
+        };
+        updateLastConnection();
+
     } catch (error) {
         res.send({
             status: 'error',
@@ -151,5 +166,7 @@ router.post('/changePass', async (req, res) => {
        return res.redirect('/recovery');
     }
 })
+
+router.post('/:uid/documents',isUser, uploader.array('docs', 3 ), UserService.uploadDocuments)
 
 export default router;
