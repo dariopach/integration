@@ -94,7 +94,7 @@ router.post("/login", async (req, res) => {
         const updateLastConnection = async () => {
             try {
                 const lastConnection = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-                await UserService.updateUser(user, { lastConnection });
+                await userService.updateUser(user, { lastConnection });
                 console.log('Last connection updated successfully');
             } catch (error) {
                 console.error('Error updating last connection:', error.message);

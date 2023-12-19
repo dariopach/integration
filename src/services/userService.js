@@ -28,9 +28,9 @@ class UserService {
         }
     }
 
-    async updateUser(userId, updatedUserData) {
+    async updateUser(userData, updatedUserData) {
         try {
-            const user = await userModel.findById(userId);
+            const user = await userModel.findOne({ email: userData.email});
 
             if (!user) {
                 throw new Error('User not found');
@@ -52,7 +52,13 @@ class UserService {
                 user.age = updatedUserData.age;
             }
 
-            user.lastConnection = new Date();
+            if (updatedUserData.documents) {
+                user.documents = updatedUserData.documents;
+            }
+
+            if (updatedUserData.lastConnection) {
+                user.lastConnection = updatedUserData.lastConnection;
+            }
 
             await user.save();
 
@@ -65,13 +71,13 @@ class UserService {
 
     uploadDocuments = async (req, res) => {
 
-        const { userId } = req.params
+        const userId = req.params.uid;
         if (!userId || !isNan(userId)) {
             throw new Error('User not found');
         }
 
         const files = req.files;
-        if (!files || !isNan(userId)) {
+        if (!files || !isNan(files)) {
             throw new Error('Docs not found');
         }
 
@@ -83,10 +89,9 @@ class UserService {
             });
         }
 
-        const user = await UserService.getUserById(userId)
-        user.documents = documents;
-
-        const result = await UserService.updateUser(user);
+        const userData = await userModel.findById(userId);
+        userData.documents = documents;
+        const user = await this.updateUser(userData, {...user});
 
         return res.status(201).json({
             status: 'success',
