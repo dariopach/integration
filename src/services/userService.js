@@ -67,60 +67,73 @@ class UserService {
         } catch (error) {
             throw new Error(error.message.replace(/"/g, "'"));
         }
+
     }
 
-    uploadDocuments = async (req, res) => {
-
+    async uploadDocuments(req, res) {
         const userId = req.params.uid;
-        if (!userId || !isNan(userId)) {
-            throw new Error('User not found');
+        if (!userId || isNaN(userId)) {
+          return res.status(400).json({ error: 'User not found' });
         }
-
+    
         const files = req.files;
-        if (!files || !isNan(files)) {
-            throw new Error('Docs not found');
+        if (!files || isNaN(files.length)) {
+          return res.status(400).json({ error: 'Docs not found' });
         }
-
-        const documents = [];
-        for (let file of files) {
-            documents.push({
-                name: file.filename,
-                reference: `${__dirname}/../public/img/${file.filename}`
-            });
-        }
-
-        const userData = await userModel.findById(userId);
-        userData.documents = documents;
-        const user = await this.updateUser(userData, {...user});
-
-        return res.status(201).json({
+    
+        const documents = files.map(file => ({
+          name: file.filename,
+          reference: `${__dirname}/../public/img/${file.filename}`
+        }));
+    
+        try {
+          const userData = await userModel.findById(userId);
+          if (!userData) {
+            return res.status(404).json({ error: 'User not found' });
+          }
+    
+          userData.documents = documents;
+          const user = await this.updateUser(userData, { ...userData });
+    
+          return res.status(201).json({
             status: 'success',
-            message: 'user successfully updated',
-            data: result
-        })
-    }
-
+            message: 'User successfully updated',
+            data: user
+          });
+        } catch (error) {
+          return res.status(500).json({ error: 'Error updating user' });
+        }
+      }
+      async togglePremiumStatus(req, res) {
+        const userId = req.params.uid;
+    
+        try {
+          const user = await userModel.findById(userId);
+    
+          if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
+          }
+    
+          // Verificar si el usuario ha subido los documentos necesarios
+          if (!this.hasRequiredDocuments(user)) {
+            return res.status(400).json({ error: 'El usuario no ha terminado de procesar su documentación.' });
+          }
+    
+          // Cambiar el rol del usuario entre "user" y "premium"
+          user.role = user.role === 'user' ? 'premium' : 'user';
+    
+          await user.save();
+    
+          res.status(200).json({ message: 'Rol de usuario actualizado exitosamente.' });
+        } catch (error) {
+          res.status(500).json({ error: 'Error al cambiar el rol de usuario.' });
+        }
+      }
+    
+      hasRequiredDocuments(user) {
+        return user.documents && user.documents.length >= 3; 
+      }
 }
 
-const togglePremiumStatus = async (req, res) => {
-    const userId = req.params.uid;
-  
-    try {
-      const user = await user.findById(userId);
-  
-      if (!user) {
-        return res.status(404).json({ error: 'Usuario no encontrado.' });
-      }
-  
-      // Cambiar el rol del usuario entre "user" y "premium"
-      user.role = user.role === 'user' ? 'premium' : 'user';
-  
-      await user.save();
-  
-      res.status(200).json({ message: 'Rol de usuario actualizado exitosamente.' });
-    } catch (error) {
-      res.status(500).json({ error: 'Error al cambiar el rol de usuario.' });
-    }
-  };
 
-  export { UserService, togglePremiumStatus };
+  export { UserService };

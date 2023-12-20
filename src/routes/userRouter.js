@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { SECRET_JWT } from '../utils/constantsUtil.js';
 import userModel from '../models/userModel.js';
 import { isValidPassword, createHash} from '../utils/functionsUtil.js';
-import { UserService, togglePremiumStatus } from '../services/userService.js';
+import { UserService } from '../services/userService.js';
 import { uploader } from '../utils/multerUtil.js'
 import { isUser } from '../utils/authorizationUtil.js';
 
@@ -14,7 +14,7 @@ const router = Router();
 const userService = new UserService();
 
 // Ruta para cambiar el rol de un usuario a premium o viceversa
-router.put('/premium/:uid', togglePremiumStatus);
+router.put('/premium/:uid', userService.togglePremiumStatus);
 
 router.delete('/products/:productId', async (req, res) => {
     const productId = req.params.productId;
@@ -168,6 +168,6 @@ router.post('/changePass', async (req, res) => {
     }
 })
 
-router.post('/:uid/documents',isUser, uploader.array('docs', 3 ), userService.uploadDocuments)
+router.post('/:uid/documents', isUser, uploader.array('docs', 3 ), userService.uploadDocuments)
 
 export default router;
