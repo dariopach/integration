@@ -1,4 +1,16 @@
 import { productModel } from "../models/productModel.js";
+import nodemailer from 'nodemailer';
+
+const transport = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    } 
+  });
+
+
 
 class productDBService{
 
@@ -159,7 +171,25 @@ class productDBService{
             console.log(error.message);
             return { status: 'error', payload: [] };
         }
-    }    
+    }
+    
+  async sendEmailToPremiumUser(userEmail, productName) {
+    try {
+      const result = await transport.sendMail({
+        from: 'Ecommerce <dariopach3@gmail.com>',
+        to: userEmail,
+        subject: 'Producto Eliminado',
+        html: `<div>
+                <h1>Ecommerce</h1>
+                <p>Lo sentimos, tu producto "${productName}" ha sido eliminado.</p>
+              </div>`
+      });
+
+      console.log('Email enviado con éxito:', result);
+    } catch (error) {
+      console.error('Error al enviar el correo electrónico:', error.message);
+    }
+  }
 }
 
 export { productDBService } ;

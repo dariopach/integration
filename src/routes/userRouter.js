@@ -8,7 +8,7 @@ import userModel from '../models/userModel.js';
 import { isValidPassword, createHash} from '../utils/functionsUtil.js';
 import { UserService } from '../services/userService.js';
 import { uploader } from '../utils/multerUtil.js'
-import { isUser } from '../utils/authorizationUtil.js';
+import { isUser, isAdmin } from '../utils/authorizationUtil.js';
 
 const router = Router();
 const userService = new UserService();
@@ -169,5 +169,13 @@ router.post('/changePass', async (req, res) => {
 })
 
 router.post('/:uid/documents', isUser, uploader.array('docs', 3 ), userService.uploadDocuments)
+
+// Ruta para acceder al panel de administrador
+router.get('/admin', isAdmin, userService.renderAdminPanel);
+
+// Rutas para actualizar el rol y eliminar un usuario
+router.post('/admin/update-role/:userId', isAdmin, userService.updateUserRole);
+router.post('/admin/delete-user/:userId', isAdmin, userService.deleteUser);
+
 
 export default router;

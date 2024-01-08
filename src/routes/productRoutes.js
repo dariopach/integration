@@ -92,6 +92,11 @@ class DeleteProductHandler {
             code: ErrorCodes.PERMISSION_ERROR,
           });
         }
+
+        // Enviar correo al usuario premium antes de borrar el producto
+      if (userRole === 'premium') {
+        await productDBService.sendEmailToPremiumUser(userEmail, product.name);
+      }
   
         // Borrar el producto
         const result = await ProductService.deleteProduct(productId);
