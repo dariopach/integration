@@ -67,8 +67,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Routers
-/*app.use("/api/product", isAdmin, productRoutes);
-app.use(passport.authenticate('jwt'));*/
+/*app.use("/api/product", isAdmin, productRoutes);*/
+app.use(passport.authenticate('jwt'));
 app.use("/", viewsRouter);
 app.use('/api/users', userRouter);
 app.use('/api/sessions', userRouter);
