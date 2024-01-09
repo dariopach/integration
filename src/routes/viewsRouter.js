@@ -5,6 +5,7 @@ import { productDBService } from '../services/productDBManager.js';
 import { CartDBManager } from '../services/cartDBManager.js';
 import { cartModel } from '../models/cartModel.js';
 import { SECRET_JWT } from '../utils/constantsUtil.js';
+import { isAdmin } from '../utils/authorizationUtil.js';
 
 
 const router = Router();
@@ -14,7 +15,7 @@ const CartService = new CartDBManager(); // Crea una instancia del servicio de c
 router.get('/products', auth, async (req, res) => {
     const { page, limit, sort, query } = req.query;
     const result = await ProductService.getAllProducts({ page, limit, sort, query });
-    const randomCart = JSON.stringify(await CartService.getRandomCart());
+    const userCart = JSON.stringify(await CartService.getCart(req.user.email));
 
     result.prevLink = result.hasPrevPage ? `http://localhost:8080/products?page=${result.prevPage}` : '';
     result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}` : '';
@@ -24,8 +25,8 @@ router.get('/products', auth, async (req, res) => {
         title: 'Entrega',
         style: 'index.css',
         result,
-        user: req.session.user,
-        randomCart
+        user: req.user,
+        userCart
     });
 });
 
@@ -116,7 +117,7 @@ const token = req.params.token ?? null;
 });
 
 function auth(req, res, next) {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.redirect("/login");
     }
 
@@ -124,7 +125,7 @@ function auth(req, res, next) {
 }
 
 function logged(req, res, next) {
-    if (req.session.user) {
+    if (req.user) {
         return res.redirect("/products");
     }
 

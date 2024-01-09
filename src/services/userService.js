@@ -173,21 +173,38 @@ class UserService {
   };
 
   // Eliminar un usuario
-  deleteUser = async (req, res) => {
-    const userId = req.params.userId;
-
+  async deleteUser(req, res) {
     try {
-      // Usar el middleware isAdmin para verificar si el usuario es administrador
-      isAdmin(req, res, async () => {
-        const deletedUser = await userModel.findByIdAndDelete(userId);
-        res
-          .status(200)
-          .json({ message: "Usuario eliminado exitosamente.", deletedUser });
-      });
+        const twoDaysAgo = subDays(new Date(), 2); // Cambiar a 30 minutos para pruebas rápidas
+        const deletedUsers = await userModel.find({ lastConnection: { $lt: twoDaysAgo } });
+
+        // Enviar correo a los usuarios eliminados por inactividad
+        await this.sendEmails(deletedUsers);
+
+        // Eliminar los usuarios inactivos
+        await userModel.deleteMany({ lastConnection: { $lt: twoDaysAgo } });
+
+        res.status(200).json({ message: 'Usuarios inactivos eliminados exitosamente.' });
     } catch (error) {
-      res.status(500).json({ error: "Error al eliminar el usuario." });
+        res.status(500).json({ error: 'Error al limpiar usuarios inactivos.' });
     }
-  };
+}
+
+async sendEmails(users) {
+    try {
+        for (const user of users) {
+            const result = await this.transporter.sendMail({
+                from: 'Ecommerce <dariopach3@gmail.com>',
+                to: user.email,
+                subject: 'Cuenta eliminada por inactividad',
+                html: `<p>Hola ${user.first_name}, tu cuenta ha sido eliminada por inactividad en nuestro sistema.</p>`,
+            });
+            console.log(`Correo enviado a ${user.email}:`, result);
+        }
+    } catch (error) {
+        console.error('Error en sendEmails:', error.message);
+    }
+}
 }
 
 export { UserService };

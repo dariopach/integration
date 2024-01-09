@@ -1,4 +1,5 @@
 import { cartModel } from "../models/cartModel.js";
+import userModel from "../models/userModel.js";
 import { productDBService } from "./productDBManager.js";
 
 class CartDBManager {
@@ -12,16 +13,23 @@ class CartDBManager {
         }
     }
 
-    async getRandomCart() {
+    async getCart(email) {
         try {
-            const cart = await cartModel.findOne().populate('products.product').lean();
-            if (cart) {
+            const user = await userModel.findOne({email: email});
+            const userCart = user.cart;
+
+            if (userCart.cartInfo) {
+                let cart = await cartModel.findById(userCart.cartInfo);
                 let total = 0;
                 cart.products.forEach( product => total += (product.product.price * product.quantity))
                 cart.total = total;
                 return cart;
+            } else {
+                const newCart = await this.createCart();
+                user.cart = {cartInfo: newCart.id};
+                await user.save();
+                return newCart;
             }
-            return this.createCart();
         } catch (error) {
             console.error(error.message);
             throw new Error('Error fetching cart');

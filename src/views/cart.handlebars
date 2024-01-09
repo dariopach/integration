@@ -21,8 +21,11 @@
                 </div>
             {{/each}}
             <p>Total: ${{cart.total}}</p>
+            <button onclick="clearCart('{{cart._id}}')">Comprar carrito</button>
+            <button onclick="goToHome()">Volver a productos</button>
         {{else}}
             <p>El carrito está vacío.</p>
+            <button onclick="goToHome()">Volver a productos</button>
         {{/if}}
     </div>
 
@@ -40,7 +43,10 @@
 
         function generateCartHtml(cart) {
             if (cart.products.length === 0) {
-                return '<p>El carrito está vacío.</p>';
+                let cartHtml = '';
+                cartHtml += '<p>El carrito está vacío.</p>';
+                cartHtml += '<button onclick="goToHome()">Volver a productos</button>';
+                return cartHtml;
             }
 
             let cartHtml = '';
@@ -55,6 +61,8 @@
                 cartHtml += '</div>';
             });
             cartHtml += `<p>Total: $${cart.total}</p></div>`;
+            cartHtml += '<button onclick="clearCart(\'' + cart._id + '\')">Comprar carrito</button>'
+            cartHtml += '<button onclick="goToHome()">Volver a productos</button>'
             
             return cartHtml;
         }
@@ -95,6 +103,24 @@
             .catch(error => {
                 console.error('Error al eliminar producto del carrito:', error);
             });
+        }
+
+        function clearCart(cartId) {
+            fetch(`/api/carts/${cartId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                socket.emit('cartUpdated', data.message)
+                alert("Carrito comprado!")
+            })
+            .catch(error => {
+                console.error('Error al eliminar producto del carrito:', error);
+            });
+        }
+
+        function goToHome() {
+            window.location.href = '/products';
         }
     </script>
 </body>

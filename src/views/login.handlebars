@@ -1,6 +1,6 @@
 <h1>Ingreso usuario registrado</h1>
 
-<form method="post" action="/api/sessions/login">
+<form onsubmit="handleLogin()">
 
     <label for="email">Email</label>
     <input type="email" name="email" id="email">
@@ -16,14 +16,28 @@
 <span><a href="/register" target="_self">Register</a></span>
 <span><a href="/recovery" target="_self" style="'margin-left: 10px;">Olvide mi contraseña</a></span>
 
-{{#if loginFailed}}
-    <script type="text/javascript">
-        alert('Login Failed!');
-    </script>
-{{/if}}
-
 {{#if registerSuccess}}
     <script type="text/javascript">
         alert('Register Success!');
     </script>
 {{/if}}
+<script type="text/javascript">
+    function handleLogin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/api/sessions/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        })
+        .then(data => {
+            window.location.href = "/products";
+        })
+        .catch(error => {
+            alert('Login Failed!' + error);
+        });
+    }
+</script>

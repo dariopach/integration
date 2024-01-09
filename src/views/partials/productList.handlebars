@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="../../../public/css/productList.css">
 </head>
 <body>
+    <div>
+        <div>{{userCart}}</div>
+    </div>
+    <button onclick="goToCart()">Ver carrito</button>
+    
     <div class="filter-dropdown">
         <label for="category-filter">Filtrar por categoría:</label>
         <select id="category-filter" onchange="filterByCategory(this.value, event)">
@@ -66,7 +71,7 @@
 
     // Función para agregar al carrito
     function addToCart(productId) {
-        const randCart = {{{randomCart}}};
+        const randCart = {{{userCart}}};
 
         fetch(`/api/carts/${randCart._id}/product/${productId}`, {
             method: 'POST',
@@ -86,6 +91,12 @@
         .catch(error => {
             console.error('Error:', error);
         });
+    }
+
+    function goToCart() {
+        const userCart = {{{userCart}}};
+
+        window.location.href = `/carts/${userCart._id}`
     }
     </script>
 </body>
