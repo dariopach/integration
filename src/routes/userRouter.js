@@ -28,14 +28,39 @@ router.delete('/products/:productId', async (req, res) => {
     }
   });
 
-router.post(
+  router.post(
     "/register",
     passport.authenticate('register',{failureRedirect: '/api/sessions/failRegister'}),
-    (req, res) => {
-        res.send({
-            status: 'success',
-            message: 'User Registered'
-        });
+    async (req, res) => {
+        const { email, password } = req.body;
+      const result = await userModel.findOne({ email }).lean();
+
+      if (!result) throw new Error('Login error!');
+      if (!isValidPassword(result, password)) throw new Error('Login error!');
+
+      const user = {
+        first_name: result.first_name,
+        last_name: result.last_name,
+        email: result.email,
+        age: result.age,
+      };
+
+      const token = jwt.sign(result, SECRET_JWT, { expiresIn: '1h' });
+
+      // Updated last connection
+      const updateLastConnection = async () => {
+        try {
+          const lastConnection = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+          await userService.updateUser(user, { lastConnection });
+          console.log('Last connection updated successfully');
+        } catch (error) {
+          console.error('Error updating last connection:', error.message);
+        }
+      };
+      updateLastConnection();
+
+      res.cookie('coderCookie', token, { maxAge: 3600000 }).redirect("/products");
+
     }
 );
 
