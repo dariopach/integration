@@ -194,7 +194,7 @@ const specs= swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 
-const PORT = 8080;
+const PORT = process.env.PORT||8080;
 server.listen(PORT, () => {
   console.log(`Start server in PORT ${PORT}`);
 });
