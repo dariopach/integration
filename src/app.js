@@ -15,13 +15,14 @@ import swaggerUiExpress from "swagger-ui-express";
 
 import productRoutes from "./routes/productRoutes.js";
 import viewsRouter from "./routes/viewsRouter.js";
+import unauthorizedRoutes from "./routes/unauthorizedRoutes.js";
 import userRouter from './routes/userRouter.js';
 import { __dirname } from "./utils/constantsUtil.js";
 import cartsRouter from "./routes/cartsRouter.js";
 import sessionRouter from "./routes/sessionRouter.js";
 import { messageModel } from "./models/messageModel.js";
 import initializatePassport from "./config/passportConfig.js";
-import { isAdmin, isUser } from "./utils/authorizationUtil.js";
+import { isAdmin, isUser, checkTokenExpiration } from "./utils/authorizationUtil.js";
 import errorHandler from './errorHandler/index.js';
 import { addLogger } from './utils/loggerCustom.js';
 import notificationRouter from './routes/notificationRouter.js';
@@ -29,7 +30,7 @@ import notificationRouter from './routes/notificationRouter.js';
 const uri = process.env.LINK_MONGO;
 mongoose.connect(uri);
 
-const app = express();
+export const app = express();
 const server = http.createServer(app);
 
 //Socket.io config
@@ -68,10 +69,11 @@ app.use(passport.session());
 
 //Routers
 /*app.use("/api/product", isAdmin, productRoutes);*/
-app.use(passport.authenticate('jwt'));
-app.use("/", viewsRouter);
+app.use("/", unauthorizedRoutes)
 app.use('/api/users', userRouter);
 app.use('/api/sessions', userRouter);
+app.use(passport.authenticate('jwt'));
+app.use("/", viewsRouter);
 app.use('/api/session', sessionRouter);
 app.use('/api/notification', notificationRouter);
 app.use("/api/product", isAdmin, productRoutes);
@@ -194,7 +196,7 @@ const specs= swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 
-const PORT = process.env.PORT||8080;
+const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`Start server in PORT ${PORT}`);
 });

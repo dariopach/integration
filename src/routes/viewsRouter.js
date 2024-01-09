@@ -1,18 +1,15 @@
 import { Router } from 'express';
 import jwt  from 'jsonwebtoken';
-
 import { productDBService } from '../services/productDBManager.js';
 import { CartDBManager } from '../services/cartDBManager.js';
-import { cartModel } from '../models/cartModel.js';
 import { SECRET_JWT } from '../utils/constantsUtil.js';
-import { isAdmin } from '../utils/authorizationUtil.js';
-
+import { checkTokenExpiration } from '../utils/authorizationUtil.js';
 
 const router = Router();
 const ProductService = new productDBService();
 const CartService = new CartDBManager(); // Crea una instancia del servicio de carrito
 
-router.get('/products', auth, async (req, res) => {
+router.get('/products', auth, checkTokenExpiration, async (req, res) => {
     const { page, limit, sort, query } = req.query;
     const result = await ProductService.getAllProducts({ page, limit, sort, query });
     const userCart = JSON.stringify(await CartService.getCart(req.user.email));
@@ -30,7 +27,7 @@ router.get('/products', auth, async (req, res) => {
     });
 });
 
-router.get('/carts/:cid', async (req, res) => {
+router.get('/carts/:cid',checkTokenExpiration, async (req, res) => {
     const cartId = req.params.cid;
 
     try {
@@ -51,46 +48,7 @@ router.get('/carts/:cid', async (req, res) => {
     }
 });
 
-router.get("/login", logged, async (req, res) => {
-
-    res.render(
-        'login',
-        {
-            title: "Ingreso usuario registrado",
-            style: "index.css",
-            loginFailed: req.session.loginFailed ?? false,
-            registerSuccess: req.session.registerSuccess ?? false
-        }
-    );
-});
-
-router.get("/register", logged, async (req, res) => {
-
-    res.render(
-        'register',
-        {
-            title: "Registro de nuevo usuario",
-            style: "index.css",
-            registerFailed: req.session.registerFailed ?? false
-        }
-    );
-});
-
-
-router.get("/recovery", logged, async (req, res) => {
-
-    console.log(req.cookies);
-    res.render(
-        'recovery',
-        {
-            title: "Recuperar contraseña",
-            style: "index.css",
-            notification: req.cookies.notification ?? false
-        }
-    );
-});
-
-router.get("/changePass/:token", async (req, res) => {
+router.get("/changePass/:token",checkTokenExpiration, async (req, res) => {
 
 const token = req.params.token ?? null;
 
@@ -119,14 +77,6 @@ const token = req.params.token ?? null;
 function auth(req, res, next) {
     if (!req.user) {
         return res.redirect("/login");
-    }
-
-    next();
-}
-
-function logged(req, res, next) {
-    if (req.user) {
-        return res.redirect("/products");
     }
 
     next();
