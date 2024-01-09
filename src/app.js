@@ -52,7 +52,6 @@ app.use(session(
   {
       store: mongoStore.create({
           mongoUrl: uri,
-          mongoOptions: { useUnifiedTopology: true },
           ttl: 100
       }),
       secret: 'secretPhrase',
